@@ -1,0 +1,16 @@
+{
+    "name": "dbrkls/edifactdata",
+    "description": "EDI DATA",
+    "keywords": ["yii"],
+    "type": "yii-extension",
+    "license": "BSD-2-Clause",
+    "authors": [
+        {
+            "name": "Uldis Nelsons",
+            "email": "uldisnelsons@gmail.com"
+        }
+     ],
+     "require": {
+        "php": ">=5.3.0",
+     }
+}
