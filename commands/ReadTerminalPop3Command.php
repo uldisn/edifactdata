@@ -67,10 +67,9 @@ EOD;
     }
 
     public function readPop3Attachments($strHost, $strUser, $strPass) {
-
-
         $inbox = $this->connectPop3($strHost, $strUser, $strPass);
         if ($inbox === false) {
+            echo 'Can not create connection to POP3!' . PHP_EOL;
             return false;
         }
 
@@ -83,6 +82,7 @@ EOD;
         if (!$emails) {
             /* close the connection */
             imap_close($inbox);
+            echo 'No any emails!' . PHP_EOL;
             return $ra;
         }
 
@@ -92,7 +92,9 @@ EOD;
         rsort($emails);
 
         /* for every email... */
+        echo 'Reademails' ;
         foreach ($emails as $email_number) {
+            echo 'E';
 
             /* get information specific to this email */
             $overview = imap_fetch_overview($inbox, $email_number, 0);
@@ -158,12 +160,14 @@ EOD;
                 if (empty($filename))
                     $filename = $attachment['filename'];
 
-
+                echo 'A';
                 $ra[] = array(
                     'filename' => $filename,
                     'data' => $attachment['attachment'],
                 );
             }
+            
+            echo PHP_EOL;
         }
 
         /* close the connection */
