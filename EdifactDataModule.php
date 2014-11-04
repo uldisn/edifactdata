@@ -9,8 +9,8 @@ class EdifactDataModule extends CWebModule
 
 		// import the module-level models and components
 		$this->setImport(array(
-			'edifact.models.*',
-			'edifact.components.*',
+			'edifactdata.models.*',
+			'edifactdata.components.*',
 		));
 	}
 
