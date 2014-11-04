@@ -54,7 +54,7 @@ EOD;
     }
 
     public function connectPop3($strHost, $strUser, $strPass) {
-        $mailBox = @imap_open('{' . $strHost . ':110/pop3}', $strUser, $strPass);
+        $mailBox = imap_open('{' . $strHost . ':110/pop3}', $strUser, $strPass);
 
         if ($mailBox) {
             // call this to avoid the mailbox is empty error message
