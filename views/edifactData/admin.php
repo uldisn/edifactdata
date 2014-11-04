@@ -49,223 +49,87 @@ $this->widget('TbGridView',
         ),
         'columns' => array(
             array(
-                'class' => 'CLinkColumn',
-                'header' => '',
-                'labelExpression' => '$data->itemLabel',
-                'urlExpression' => 'Yii::app()->controller->createUrl("view", array("id" => $data["id"]))'
-            ),
-            array(
-                'class' => 'editable.EditableColumn',
-                'name' => 'id',
-                'editable' => array(
-                    'url' => $this->createUrl('/edifactdata/edifactData/editableSaver'),
-                    //'placement' => 'right',
-                ),
-                'htmlOptions' => array(
-                    'class' => 'numeric-column',
-                ),
-            ),
-            array(
-                'class' => 'editable.EditableColumn',
-                'name' => 'edifact_id',
-                'editable' => array(
-                    'type' => 'select',
-                    'url' => $this->createUrl('/edifactdata/edifactData/editableSaver'),
-                    'source' => CHtml::listData(Edifact::model()->findAll(array('limit' => 1000)), 'id', 'itemLabel'),
-                    //'placement' => 'right',
-                )
-            ),
-            array(
-                'class' => 'editable.EditableColumn',
-                'name' => 'messageType',
-                'editable' => array(
-                    'url' => $this->createUrl('/edifactdata/edifactData/editableSaver'),
-                    //'placement' => 'right',
-                ),
-                'htmlOptions' => array(
-                    'class' => 'numeric-column',
-                ),
-            ),
-            array(
-                //char(10)
-                'class' => 'editable.EditableColumn',
-                'name' => 'interchangeSender',
-                'editable' => array(
-                    'url' => $this->createUrl('/edifactdata/edifactData/editableSaver'),
-                    //'placement' => 'right',
-                )
-            ),
-            array(
-                'class' => 'editable.EditableColumn',
-                'name' => 'dateTimePreparation',
-                'editable' => array(
-                    'type' => 'datetime',
-                    'url' => $this->createUrl('/edifactdata/edifactData/editableSaver'),
-                    //'placement' => 'right',
-                )
-            ),
-            array(
-                //varchar(100)
-                'class' => 'editable.EditableColumn',
-                'name' => 'messageReferenceNumber',
-                'editable' => array(
-                    'url' => $this->createUrl('/edifactdata/edifactData/editableSaver'),
-                    //'placement' => 'right',
-                )
-            ),
-            array(
-                //varchar(100)
-                'class' => 'editable.EditableColumn',
-                'name' => 'conveyanceReferenceNumber',
-                'editable' => array(
-                    'url' => $this->createUrl('/edifactdata/edifactData/editableSaver'),
-                    //'placement' => 'right',
-                )
-            ),
-            array(
-                //varchar(100)
-                'class' => 'editable.EditableColumn',
-                'name' => 'idOfTheMeansOfTransportVessel',
-                'editable' => array(
-                    'url' => $this->createUrl('/edifactdata/edifactData/editableSaver'),
-                    //'placement' => 'right',
-                )
-            ),
-            /*
-            array(
-                //char(10)
-                'class' => 'editable.EditableColumn',
-                'name' => 'portOfDischarge',
-                'editable' => array(
-                    'url' => $this->createUrl('/edifactdata/edifactData/editableSaver'),
-                    //'placement' => 'right',
-                )
-            ),
-            array(
-                'class' => 'editable.EditableColumn',
-                'name' => 'arrivalDateTimeEstimated',
-                'editable' => array(
-                    'type' => 'datetime',
-                    'url' => $this->createUrl('/edifactdata/edifactData/editableSaver'),
-                    //'placement' => 'right',
-                )
-            ),
-            array(
-                'class' => 'editable.EditableColumn',
-                'name' => 'arrivalDateTimeActual',
-                'editable' => array(
-                    'type' => 'datetime',
-                    'url' => $this->createUrl('/edifactdata/edifactData/editableSaver'),
-                    //'placement' => 'right',
-                )
-            ),
-            array(
-                'class' => 'editable.EditableColumn',
-                'name' => 'departureDateTimeEstimated',
-                'editable' => array(
-                    'type' => 'datetime',
-                    'url' => $this->createUrl('/edifactdata/edifactData/editableSaver'),
-                    //'placement' => 'right',
-                )
-            ),
-            array(
-                //char(10)
-                'class' => 'editable.EditableColumn',
-                'name' => 'carrier',
-                'editable' => array(
-                    'url' => $this->createUrl('/edifactdata/edifactData/editableSaver'),
-                    //'placement' => 'right',
-                )
-            ),
-            array(
-                //char(20)
-                'class' => 'editable.EditableColumn',
-                'name' => 'equipmentIdentification',
-                'editable' => array(
-                    'url' => $this->createUrl('/edifactdata/edifactData/editableSaver'),
-                    //'placement' => 'right',
-                )
-            ),
-            array(
-                //varchar(100)
-                'class' => 'editable.EditableColumn',
-                'name' => 'BookingreferenceNumber',
-                'editable' => array(
-                    'url' => $this->createUrl('/edifactdata/edifactData/editableSaver'),
-                    //'placement' => 'right',
-                )
-            ),
-            array(
-                //varchar(100)
-                'class' => 'editable.EditableColumn',
-                'name' => 'RealiseReferenceNumber',
-                'editable' => array(
-                    'url' => $this->createUrl('/edifactdata/edifactData/editableSaver'),
-                    //'placement' => 'right',
-                )
-            ),
-            array(
-                'class' => 'editable.EditableColumn',
-                'name' => 'PositioningDatetimeOfEquipment',
-                'editable' => array(
-                    'type' => 'datetime',
-                    'url' => $this->createUrl('/edifactdata/edifactData/editableSaver'),
-                    //'placement' => 'right',
-                )
-            ),
-            array(
-                //char(10)
-                'class' => 'editable.EditableColumn',
-                'name' => 'ActivityLocation',
-                'editable' => array(
-                    'url' => $this->createUrl('/edifactdata/edifactData/editableSaver'),
-                    //'placement' => 'right',
-                )
-            ),
-            array(
-                //char(20)
-                'class' => 'editable.EditableColumn',
-                'name' => 'ActivityLocationRelatedPlace',
-                'editable' => array(
-                    'url' => $this->createUrl('/edifactdata/edifactData/editableSaver'),
-                    //'placement' => 'right',
-                )
-            ),
-            array(
-                //varchar(20)
-                'class' => 'editable.EditableColumn',
-                'name' => 'GrossWeight',
-                'editable' => array(
-                    'url' => $this->createUrl('/edifactdata/edifactData/editableSaver'),
-                    //'placement' => 'right',
-                )
-            ),
-            array(
-                //varchar(20)
-                'class' => 'editable.EditableColumn',
-                'name' => 'TareWeight',
-                'editable' => array(
-                    'url' => $this->createUrl('/edifactdata/edifactData/editableSaver'),
-                    //'placement' => 'right',
-                )
-            ),
-            array(
-                //char(10)
-                'class' => 'editable.EditableColumn',
-                'name' => 'CarRegNumber',
-                'editable' => array(
-                    'url' => $this->createUrl('/edifactdata/edifactData/editableSaver'),
-                    //'placement' => 'right',
-                )
-            ),
-            */
 
+                'name' => 'messageType',
+            ),
+            array(
+                'name' => 'interchangeSender',
+            ),
+            array(
+                'name' => 'dateTimePreparation',
+            ),
+            array(
+                //varchar(100)
+                'name' => 'messageReferenceNumber',
+            ),
+            array(
+                //varchar(100)
+                'name' => 'conveyanceReferenceNumber',
+            ),
+            array(
+                //varchar(100)
+                'name' => 'idOfTheMeansOfTransportVessel',
+            ),
+
+            array(
+                //char(10)
+                'name' => 'portOfDischarge',
+            ),
+            array(
+
+                'name' => 'arrivalDateTimeEstimated',
+            ),
+            array(
+                'name' => 'arrivalDateTimeActual',
+            ),
+            array(
+                'name' => 'departureDateTimeEstimated',
+            ),
+            array(
+                //char(10)
+                'name' => 'carrier',
+            ),
+            array(
+                //char(20)
+                'name' => 'equipmentIdentification',
+            ),
+            array(
+                //varchar(100)
+                'name' => 'BookingreferenceNumber',
+            ),
+            array(
+                //varchar(100)
+                'name' => 'RealiseReferenceNumber',
+            ),
+            array(
+                'name' => 'PositioningDatetimeOfEquipment',
+            ),
+            array(
+                //char(10)
+                'name' => 'ActivityLocation',
+            ),
+            array(
+                //char(20)
+                'name' => 'ActivityLocationRelatedPlace',
+            ),
+            array(
+                //varchar(20)
+                'name' => 'GrossWeight',
+            ),
+            array(
+                //varchar(20)
+                'name' => 'TareWeight',
+            ),
+            array(
+                //char(10)
+                'name' => 'CarRegNumber',
+            ),
             array(
                 'class' => 'TbButtonColumn',
                 'buttons' => array(
                     'view' => array('visible' => 'Yii::app()->user->checkAccess("Edifactdata.EdifactData.View")'),
                     'update' => array('visible' => 'FALSE'),
-                    'delete' => array('visible' => 'Yii::app()->user->checkAccess("Edifactdata.EdifactData.Delete")'),
+                    'delete' => array('visible' => 'FALSE'),
                 ),
                 'viewButtonUrl' => 'Yii::app()->controller->createUrl("view", array("id" => $data->id))',
                 'deleteButtonUrl' => 'Yii::app()->controller->createUrl("delete", array("id" => $data->id))',
