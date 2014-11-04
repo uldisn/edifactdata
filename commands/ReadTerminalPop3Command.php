@@ -42,14 +42,21 @@ EOD;
             return true;
         }
 
-        if ($args[0] = 'analyze') {
+        if ($args[0] == 'analyze') {
             include_once realpath(Yii::getPathOfAlias('edifact-parser')) . '/Analyser.php';
             include_once realpath(Yii::getPathOfAlias('edifact-parser')) . '/Parser.php';
             $this->analyze($args[1]);
         }
-        if ($args[0] = 'read') {
+        if ($args[0] == 'read') {
             include_once realpath(Yii::getPathOfAlias('edifact-parser')) . '/Parser.php';
-            $this->readEdiData($args[1]);
+            if(isset($args[1])){
+                $this->readEdiData($args[1]);
+            }else{
+                $all = Edifact::model()->findAll();
+                foreach($all as $edifact){
+                    $this->readEdiData($edifact->id);
+                }
+            }
         }
     }
 
@@ -237,7 +244,7 @@ EOD;
             'dateTimePreparation' => $parser->readEdiDataValue('UNB', 4, 0) . $parser->readEdiDataValue('UNB', 4, 1),
             'messageReferenceNumber' => $parser->readEdiDataValue('UNH', 1),
             'conveyanceReferenceNumber' => $parser->readEdiDataValue(['TDT', ['1' => '20']], 2),
-            'vessel' => $parser->readEdiDataValue(['TDT', ['1' => '20']], 8, 3),
+            'idOfTheMeansOfTransportVessel' => $parser->readEdiDataValue(['TDT', ['1' => '20']], 8, 3),
             'portOfDischarge' => $parser->readEdiDataValue(['LOC', ['1' => '11']], 2, 0),
             'arrivalDateTimeEstimated' => $parser->readEdiSegmentDTM('132'),
             'arrivalDateTimeActual' => $parser->readEdiSegmentDTM('178'),

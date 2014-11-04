@@ -26,6 +26,24 @@ class EdifactData extends BaseEdifactData
         return parent::getItemLabel();
     }
 
+    public function getmessageTypeLabel()
+    {
+        switch ($this->messageType) {
+            case self::GateIn :
+                return 'Gate In';
+                break;
+
+            case self::GateOut :
+                return 'Gate Out';
+                break;
+
+            default:
+                break;
+        }
+        
+        return parent::getItemLabel();
+    }
+
     public function behaviors()
     {
         return array_merge(

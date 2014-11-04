@@ -5,11 +5,9 @@ $this->setPageTitle(
     . Yii::t('EdifactDataModule.crud', 'Manage')
 );
 
-$this->breadcrumbs[] = Yii::t('EdifactDataModule.model', 'Edifact Datas');
-
 ?>
 
-<?php $this->widget("TbBreadcrumbs", array("links" => $this->breadcrumbs)) ?>
+
 <div class="clearfix">
     <div class="btn-toolbar pull-left">
         <div class="btn-group">
@@ -51,6 +49,7 @@ $this->widget('TbGridView',
             array(
 
                 'name' => 'messageType',
+                'value' => '$data->getmessageTypeLabel()',
             ),
             array(
                 'name' => 'interchangeSender',
