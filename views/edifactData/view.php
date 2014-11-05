@@ -146,9 +146,25 @@ $this->widget(
 
 </div>
 <div class="row">
-
+    <br>
     <div class="span12">
-        <?php //$this->renderPartial('_view-relations_grids',array('modelMain' => $model, 'ajax' => false,)); ?>    
+        <pre>
+        <?php 
+
+        $edifact = Edifact::model()->FindByPk($model->edifact->id);
+
+        $EdiParser = new EDI\Parser();
+        $f = explode(PHP_EOL, $edifact->message);
+        $parsed = $EdiParser->parse($f);
+
+        $analyser = new EDI\Analyser();
+        $analyser->edi_message = $edifact->message;
+        $mapping_segments = realpath(Yii::getPathOfAlias('edifact-parser')) . '/Mapping/d95b/segments.xml';
+        $analyser->loadSegmentsXml($mapping_segments);
+        echo $analyser->process($parsed);        
+        
+        ?>    
+</pre>
     </div>
 </div>
 

@@ -1,15 +1,14 @@
 <?php
 
 
-class EdifactDataController extends Controller
+class EtprTerminalPricesController extends Controller
 {
     #public $layout='//layouts/column2';
 
     public $defaultAction = "admin";
     public $scenario = "crud";
     public $scope = "crud";
-    public $menu_route = "edifactdata/edifactData";  
-
+    public $menu_route = "edifactdata/etprTerminalPrices";  
 
 public function filters()
 {
@@ -24,27 +23,27 @@ public function accessRules()
         array(
             'allow',
             'actions' => array('create', 'admin', 'view', 'update', 'editableSaver', 'delete','ajaxCreate'),
-            'roles' => array('Edifactdata.EdifactData.*'),
+            'roles' => array('Edifactdata.EtprTerminalPrices.*'),
         ),
         array(
             'allow',
             'actions' => array('create','ajaxCreate'),
-            'roles' => array('Edifactdata.EdifactData.Create'),
+            'roles' => array('Edifactdata.EtprTerminalPrices.Create'),
         ),
         array(
             'allow',
             'actions' => array('view', 'admin'), // let the user view the grid
-            'roles' => array('Edifactdata.EdifactData.View'),
+            'roles' => array('Edifactdata.EtprTerminalPrices.View'),
         ),
         array(
             'allow',
             'actions' => array('update', 'editableSaver'),
-            'roles' => array('Edifactdata.EdifactData.Update'),
+            'roles' => array('Edifactdata.EtprTerminalPrices.Update'),
         ),
         array(
             'allow',
             'actions' => array('delete'),
-            'roles' => array('Edifactdata.EdifactData.Delete'),
+            'roles' => array('Edifactdata.EtprTerminalPrices.Delete'),
         ),
         array(
             'deny',
@@ -62,9 +61,9 @@ public function accessRules()
         return true;
     }
 
-    public function actionView($id, $ajax = false)
+    public function actionView($etpr_id, $ajax = false)
     {
-        $model = $this->loadModel($id);
+        $model = $this->loadModel($etpr_id);
         if($ajax){
             $this->renderPartial('_view-relations_grids', 
                     array(
@@ -79,41 +78,41 @@ public function accessRules()
 
     public function actionCreate()
     {
-        $model = new EdifactData;
+        $model = new EtprTerminalPrices;
         $model->scenario = $this->scenario;
 
-        $this->performAjaxValidation($model, 'edifact-data-form');
+        $this->performAjaxValidation($model, 'etpr-terminal-prices-form');
 
-        if (isset($_POST['EdifactData'])) {
-            $model->attributes = $_POST['EdifactData'];
+        if (isset($_POST['EtprTerminalPrices'])) {
+            $model->attributes = $_POST['EtprTerminalPrices'];
 
             try {
                 if ($model->save()) {
                     if (isset($_GET['returnUrl'])) {
                         $this->redirect($_GET['returnUrl']);
                     } else {
-                        $this->redirect(array('view', 'id' => $model->id));
+                        $this->redirect(array('view', 'etpr_id' => $model->etpr_id));
                     }
                 }
             } catch (Exception $e) {
-                $model->addError('id', $e->getMessage());
+                $model->addError('etpr_id', $e->getMessage());
             }
-        } elseif (isset($_GET['EdifactData'])) {
-            $model->attributes = $_GET['EdifactData'];
+        } elseif (isset($_GET['EtprTerminalPrices'])) {
+            $model->attributes = $_GET['EtprTerminalPrices'];
         }
 
         $this->render('create', array('model' => $model));
     }
 
-    public function actionUpdate($id)
+    public function actionUpdate($etpr_id)
     {
-        $model = $this->loadModel($id);
+        $model = $this->loadModel($etpr_id);
         $model->scenario = $this->scenario;
 
-        $this->performAjaxValidation($model, 'edifact-data-form');
+        $this->performAjaxValidation($model, 'etpr-terminal-prices-form');
 
-        if (isset($_POST['EdifactData'])) {
-            $model->attributes = $_POST['EdifactData'];
+        if (isset($_POST['EtprTerminalPrices'])) {
+            $model->attributes = $_POST['EtprTerminalPrices'];
 
 
             try {
@@ -121,11 +120,11 @@ public function accessRules()
                     if (isset($_GET['returnUrl'])) {
                         $this->redirect($_GET['returnUrl']);
                     } else {
-                        $this->redirect(array('view', 'id' => $model->id));
+                        $this->redirect(array('view', 'etpr_id' => $model->etpr_id));
                     }
                 }
             } catch (Exception $e) {
-                $model->addError('id', $e->getMessage());
+                $model->addError('etpr_id', $e->getMessage());
             }
         }
 
@@ -134,13 +133,13 @@ public function accessRules()
 
     public function actionEditableSaver()
     {
-        $es = new EditableSaver('EdifactData'); // classname of model to be updated
+        $es = new EditableSaver('EtprTerminalPrices'); // classname of model to be updated
         $es->update();
     }
 
     public function actionAjaxCreate($field, $value) 
     {
-        $model = new EdifactData;
+        $model = new EtprTerminalPrices;
         $model->$field = $value;
         try {
             if ($model->save()) {
@@ -153,11 +152,11 @@ public function accessRules()
         }
     }
     
-    public function actionDelete($id)
+    public function actionDelete($etpr_id)
     {
         if (Yii::app()->request->isPostRequest) {
             try {
-                $this->loadModel($id)->delete();
+                $this->loadModel($etpr_id)->delete();
             } catch (Exception $e) {
                 throw new CHttpException(500, $e->getMessage());
             }
@@ -176,15 +175,15 @@ public function accessRules()
 
     public function actionAdmin()
     {
-        $model = new EdifactData('search');
+        $model = new EtprTerminalPrices('search');
         $scopes = $model->scopes();
         if (isset($scopes[$this->scope])) {
             $model->{$this->scope}();
         }
         $model->unsetAttributes();
 
-        if (isset($_GET['EdifactData'])) {
-            $model->attributes = $_GET['EdifactData'];
+        if (isset($_GET['EtprTerminalPrices'])) {
+            $model->attributes = $_GET['EtprTerminalPrices'];
         }
 
         $this->render('admin', array('model' => $model));
@@ -192,7 +191,7 @@ public function accessRules()
 
     public function loadModel($id)
     {
-        $m = EdifactData::model();
+        $m = EtprTerminalPrices::model();
         // apply scope, if available
         $scopes = $m->scopes();
         if (isset($scopes[$this->scope])) {
@@ -207,7 +206,7 @@ public function accessRules()
 
     protected function performAjaxValidation($model)
     {
-        if (isset($_POST['ajax']) && $_POST['ajax'] === 'edifact-data-form') {
+        if (isset($_POST['ajax']) && $_POST['ajax'] === 'etpr-terminal-prices-form') {
             echo CActiveForm::validate($model);
             Yii::app()->end();
         }
