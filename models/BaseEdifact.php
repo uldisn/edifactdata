@@ -12,7 +12,8 @@
  * @property string $message
  * @property string $create_datetime
  *
- * There are no model relations.
+ * Relations of table "edifact" available as properties of the model:
+ * @property EdifactData[] $edifactDatas
  */
 abstract class BaseEdifact extends CActiveRecord
 {
@@ -33,7 +34,7 @@ abstract class BaseEdifact extends CActiveRecord
             parent::rules(), array(
                 array('create_datetime', 'required'),
                 array('terminal, prep_datetime, message_ref_number, filename, message', 'default', 'setOnEmpty' => true, 'value' => null),
-                array('terminal', 'length', 'max' => 5),
+                array('terminal', 'length', 'max' => 10),
                 array('message_ref_number, filename', 'length', 'max' => 20),
                 array('prep_datetime, message', 'safe'),
                 array('id, terminal, prep_datetime, message_ref_number, filename, message, create_datetime', 'safe', 'on' => 'search'),
@@ -61,6 +62,7 @@ abstract class BaseEdifact extends CActiveRecord
     {
         return array_merge(
             parent::relations(), array(
+                'edifactDatas' => array(self::HAS_MANY, 'EdifactData', 'edifact_id'),
             )
         );
     }
