@@ -219,7 +219,7 @@ EOD;
 
         $analyser = new EDI\Analyser();
         $analyser->edi_message = $f;
-        $mapping_segments = realpath(Yii::getPathOfAlias('edifact-parser')) . '/Mapping/d95b/segments.xml';
+        $mapping_segments = realpath(Yii::getPathOfAlias('edifact-parser')) . '/Mapping/D95B/segments.xml';
         $analyser->loadSegmentsXml($mapping_segments);
         $text = $analyser->process($parsed);
 
@@ -269,6 +269,19 @@ EOD;
             $ecnt->ecnt_container_nr = $EdiReader->readEdiDataValue('EQD', 2);
             //$ecnt->ecnt_length` enum('40','20') DEFAULT NULL,
             $ecnt->ecnt_iso_type = $EdiReader->readEdiDataValue('EQD', 3,0);
+            if(!empty($ecnt->ecnt_iso_type)){
+                switch (substr($ecnt->ecnt_iso_type,0,1)) {
+                    case '2':
+                        $ecnt->ecnt_length = EcntContainer::ECNT_LENGTH_20;
+                        break;
+                    case '4':
+                        $ecnt->ecnt_length = EcntContainer::ECNT_LENGTH_40;
+                        break;
+                    default:
+                        $error[] = 'Nekorekts ISO TYPR:'.  $ecnt->ecnt_iso_type;
+                        break;
+                }
+            }
             
             //Effective from date/time
             //(2069) Date and/or time at which specified event or document becomes effective.
@@ -293,8 +306,12 @@ EOD;
                 $DischargingLocationIdentification = $EdiReader->readEdiDataValue(['LOC',[1=>11]],2,0);
                 if($LoadingLocationIdentification == 'LVRIX'){
                     $ecnt->ecnt_operation = EcntContainer::ECNT_OPERATION_VESSEL_LOAD;   
+                    $ecnt->ecnt_ib_carrier = 'TRUCK';
+                    //$ecnt->ecnt_ob_carrier = 'TRUCK'; 
                 }elseif($DischargingLocationIdentification == 'LVRIX'){
-                    $ecnt->ecnt_operation = EcntContainer::ECNT_OPERATION_VESSEL_DISCHARGE;   
+                    $ecnt->ecnt_operation = EcntContainer::ECNT_OPERATION_VESSEL_DISCHARGE; 
+                    //$ecnt->ecnt_ib_carrier = 'TRUCK'; 
+                    $ecnt->ecnt_ob_carrier = 'TRUCK';                    
                 }else{
                     $error[] = 'Neatrada operation - vessel load/unload!'  
                         .'/Loading:'.$LoadingLocationIdentification
@@ -310,9 +327,7 @@ EOD;
                 //  '20' (main carriage)                
                 // Read: 8028 CONVEYANCE REFERENCE NUMBER: the vessel operator's loading voyage number
                 $ecnt->ecnt_transport_id = $EdiReader->readEdiDataValue(['TDT', ['1' => 20]], 2);
-                if(!empty($ecnt->ecnt_transport_id)){
-                    $ecnt->ecnt_ib_carrier = 'TRUCK';
-                }                
+
             }elseif($MessageType == 'CODECO'){
           
                 //2005 Date/time/period qualifier: code
@@ -407,6 +422,21 @@ EOD;
             
             //$ecnt->ecnt_length` enum('40','20') DEFAULT NULL,
             $ecnt->ecnt_iso_type = $EdiReader->readEdiDataValue('EQD', 3,0);
+
+            if(!empty($ecnt->ecnt_iso_type)){
+                switch (substr($ecnt->ecnt_iso_type,0,1)) {
+                    case '2':
+                        $ecnt->ecnt_length = EcntContainer::ECNT_LENGTH_20;
+                        break;
+                    case '4':
+                        $ecnt->ecnt_length = EcntContainer::ECNT_LENGTH_40;
+                        break;
+                    default:
+                        $error[] = 'Nekorekts ISO TYPR:'.  $ecnt->ecnt_iso_type;
+                        break;
+                }
+            }
+            
             
           //8169 - fullemptyIndicatorCoded
             //To indicate the extent to which the equipment is full or empty.
