@@ -1,14 +1,14 @@
 <?php
 
 
-class EcntContainerController extends Controller
+class EdifactController extends Controller
 {
     #public $layout='//layouts/column2';
 
     public $defaultAction = "admin";
     public $scenario = "crud";
     public $scope = "crud";
-    public $menu_route = "edifactdata/ecntContainer";  
+    public $menu_route = "edifactdata/edifact";  
 
 
 public function filters()
@@ -24,27 +24,27 @@ public function accessRules()
         array(
             'allow',
             'actions' => array('create', 'admin', 'view', 'update', 'editableSaver', 'delete','ajaxCreate'),
-            'roles' => array('Edifactdata.EcntContainer.*'),
+            'roles' => array('Edifactdata.Edifact.*'),
         ),
         array(
             'allow',
             'actions' => array('create','ajaxCreate'),
-            'roles' => array('Edifactdata.EcntContainer.Create'),
+            'roles' => array('Edifactdata.Edifact.Create'),
         ),
         array(
             'allow',
             'actions' => array('view', 'admin'), // let the user view the grid
-            'roles' => array('Edifactdata.EcntContainer.View'),
+            'roles' => array('Edifactdata.Edifact.View'),
         ),
         array(
             'allow',
             'actions' => array('update', 'editableSaver'),
-            'roles' => array('Edifactdata.EcntContainer.Update'),
+            'roles' => array('Edifactdata.Edifact.Update'),
         ),
         array(
             'allow',
             'actions' => array('delete'),
-            'roles' => array('Edifactdata.EcntContainer.Delete'),
+            'roles' => array('Edifactdata.Edifact.Delete'),
         ),
         array(
             'deny',
@@ -62,9 +62,9 @@ public function accessRules()
         return true;
     }
 
-    public function actionView($ecnt_id, $ajax = false)
+    public function actionView($id, $ajax = false)
     {
-        $model = $this->loadModel($ecnt_id);
+        $model = $this->loadModel($id);
         if($ajax){
             $this->renderPartial('_view-relations_grids', 
                     array(
@@ -79,41 +79,41 @@ public function accessRules()
 
     public function actionCreate()
     {
-        $model = new EcntContainer;
+        $model = new Edifact;
         $model->scenario = $this->scenario;
 
-        $this->performAjaxValidation($model, 'ecnt-container-form');
+        $this->performAjaxValidation($model, 'edifact-form');
 
-        if (isset($_POST['EcntContainer'])) {
-            $model->attributes = $_POST['EcntContainer'];
+        if (isset($_POST['Edifact'])) {
+            $model->attributes = $_POST['Edifact'];
 
             try {
                 if ($model->save()) {
                     if (isset($_GET['returnUrl'])) {
                         $this->redirect($_GET['returnUrl']);
                     } else {
-                        $this->redirect(array('view', 'ecnt_id' => $model->ecnt_id));
+                        $this->redirect(array('view', 'id' => $model->id));
                     }
                 }
             } catch (Exception $e) {
-                $model->addError('ecnt_id', $e->getMessage());
+                $model->addError('id', $e->getMessage());
             }
-        } elseif (isset($_GET['EcntContainer'])) {
-            $model->attributes = $_GET['EcntContainer'];
+        } elseif (isset($_GET['Edifact'])) {
+            $model->attributes = $_GET['Edifact'];
         }
 
         $this->render('create', array('model' => $model));
     }
 
-    public function actionUpdate($ecnt_id)
+    public function actionUpdate($id)
     {
-        $model = $this->loadModel($ecnt_id);
+        $model = $this->loadModel($id);
         $model->scenario = $this->scenario;
 
-        $this->performAjaxValidation($model, 'ecnt-container-form');
+        $this->performAjaxValidation($model, 'edifact-form');
 
-        if (isset($_POST['EcntContainer'])) {
-            $model->attributes = $_POST['EcntContainer'];
+        if (isset($_POST['Edifact'])) {
+            $model->attributes = $_POST['Edifact'];
 
 
             try {
@@ -121,11 +121,11 @@ public function accessRules()
                     if (isset($_GET['returnUrl'])) {
                         $this->redirect($_GET['returnUrl']);
                     } else {
-                        $this->redirect(array('view', 'ecnt_id' => $model->ecnt_id));
+                        $this->redirect(array('view', 'id' => $model->id));
                     }
                 }
             } catch (Exception $e) {
-                $model->addError('ecnt_id', $e->getMessage());
+                $model->addError('id', $e->getMessage());
             }
         }
 
@@ -134,13 +134,13 @@ public function accessRules()
 
     public function actionEditableSaver()
     {
-        $es = new EditableSaver('EcntContainer'); // classname of model to be updated
+        $es = new EditableSaver('Edifact'); // classname of model to be updated
         $es->update();
     }
 
     public function actionAjaxCreate($field, $value) 
     {
-        $model = new EcntContainer;
+        $model = new Edifact;
         $model->$field = $value;
         try {
             if ($model->save()) {
@@ -153,11 +153,11 @@ public function accessRules()
         }
     }
     
-    public function actionDelete($ecnt_id)
+    public function actionDelete($id)
     {
         if (Yii::app()->request->isPostRequest) {
             try {
-                $this->loadModel($ecnt_id)->delete();
+                $this->loadModel($id)->delete();
             } catch (Exception $e) {
                 throw new CHttpException(500, $e->getMessage());
             }
@@ -176,15 +176,15 @@ public function accessRules()
 
     public function actionAdmin()
     {
-        $model = new EcntContainer('search');
+        $model = new Edifact('search');
         $scopes = $model->scopes();
         if (isset($scopes[$this->scope])) {
             $model->{$this->scope}();
         }
         $model->unsetAttributes();
 
-        if (isset($_GET['EcntContainer'])) {
-            $model->attributes = $_GET['EcntContainer'];
+        if (isset($_GET['Edifact'])) {
+            $model->attributes = $_GET['Edifact'];
         }
 
         $this->render('admin', array('model' => $model));
@@ -192,7 +192,7 @@ public function accessRules()
 
     public function loadModel($id)
     {
-        $m = EcntContainer::model();
+        $m = Edifact::model();
         // apply scope, if available
         $scopes = $m->scopes();
         if (isset($scopes[$this->scope])) {
@@ -207,7 +207,7 @@ public function accessRules()
 
     protected function performAjaxValidation($model)
     {
-        if (isset($_POST['ajax']) && $_POST['ajax'] === 'ecnt-container-form') {
+        if (isset($_POST['ajax']) && $_POST['ajax'] === 'edifact-form') {
             echo CActiveForm::validate($model);
             Yii::app()->end();
         }

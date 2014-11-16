@@ -20,7 +20,8 @@
  * @property string $etpr_hour_holiday_coefficient
  * @property string $etpr_notes
  *
- * There are no model relations.
+ * Relations of table "etpr_terminal_prices" available as properties of the model:
+ * @property EcntContainer[] $ecntContainers
  */
 abstract class BaseEtprTerminalPrices extends CActiveRecord
 {
@@ -90,6 +91,7 @@ abstract class BaseEtprTerminalPrices extends CActiveRecord
     {
         return array_merge(
             parent::relations(), array(
+                'ecntContainers' => array(self::HAS_MANY, 'EcntContainer', 'ecnt_etpr_id'),
             )
         );
     }

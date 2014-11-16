@@ -36,8 +36,10 @@ EOD;
                 echo 'Read terminal: ' . $terminal . PHP_EOL;
                 $attacments = $this->readPop3Attachments($pop3_settings['host'], $pop3_settings['user'], $pop3_settings['password']);
                 if ($attacments) {
-                    foreach ($attacments as $attachment)
+                    foreach ($attacments as $attachment){
+                        echo 'file: ' . $attachment['filename'] . PHP_EOL;
                         $this->saveAttachment($attachment['filename'], $attachment['data']);
+                    }    
                 }
                 echo 'Finish Read terminal: ' . $terminal . PHP_EOL;
             }
@@ -196,6 +198,9 @@ EOD;
                 . ' '
                 . preg_replace('#(\d\d)(\d\d)#', '$1:$2', $prepare_time);
 
+        echo ' Terminal:' . $EdiReader->readEdiDataValue('UNB', 2).PHP_EOL;
+        echo ' Number:' . $EdiReader->readEdiDataValue('UNH', 1).PHP_EOL;
+        
         $edifact = new Edifact();
         $edifact->terminal = $EdiReader->readEdiDataValue('UNB', 2);
         $edifact->message_ref_number = $EdiReader->readEdiDataValue('UNH', 1);
@@ -251,37 +256,41 @@ EOD;
         
         $terminal = $EdiReader->readEdiDataValue('UNB', 2);
         $MessageType = $EdiReader->readUNHmessageType();
+
+        $ecnt = EcntContainer::model()->findByAttributes(array('ecnt_edifact_id' => $edifact->id));
+        if(!$ecnt){
+            $ecnt = new EcntContainer();
+        }        
+        $ecnt->ecnt_edifact_id = $edifact->id;
+        $ecnt->ecnt_terminal = $terminal;
+        $ecnt->ecnt_message_type = $MessageType;        
+        
+        $ecnt->ecnt_container_nr = $EdiReader->readEdiDataValue('EQD', 2);        
+        $ecnt->ecnt_iso_type = $EdiReader->readEdiDataValue('EQD', 3,0);
+
+        if(!empty($ecnt->ecnt_iso_type)){
+            switch (substr($ecnt->ecnt_iso_type,0,1)) {
+                case '2':
+                    $ecnt->ecnt_length = EcntContainer::ECNT_LENGTH_20;
+                    break;
+                case '4':
+                    $ecnt->ecnt_length = EcntContainer::ECNT_LENGTH_40;
+                    break;
+                default:
+                    $error[] = 'Nekorekts ISO TYPR:'.  $ecnt->ecnt_iso_type;
+                    break;
+            }
+        }        
         
         if($terminal == 'RIXBCT'){
             //BGM  1001 Document name code :
             //34 - Cargo status  IN
             //36 - Identity card OUT
             
-            $ecnt = EcntContainer::model()->findByAttributes(array('ecnt_edifact_id' => $edifact->id));
-            if(!$ecnt){
-                $ecnt = new EcntContainer();
-            }
             
-            $ecnt->ecnt_edifact_id = $edifact->id;
-            $ecnt->ecnt_terminal = $terminal;
-            $ecnt->ecnt_message_type = $MessageType;
-            
-            $ecnt->ecnt_container_nr = $EdiReader->readEdiDataValue('EQD', 2);
             //$ecnt->ecnt_length` enum('40','20') DEFAULT NULL,
-            $ecnt->ecnt_iso_type = $EdiReader->readEdiDataValue('EQD', 3,0);
-            if(!empty($ecnt->ecnt_iso_type)){
-                switch (substr($ecnt->ecnt_iso_type,0,1)) {
-                    case '2':
-                        $ecnt->ecnt_length = EcntContainer::ECNT_LENGTH_20;
-                        break;
-                    case '4':
-                        $ecnt->ecnt_length = EcntContainer::ECNT_LENGTH_40;
-                        break;
-                    default:
-                        $error[] = 'Nekorekts ISO TYPR:'.  $ecnt->ecnt_iso_type;
-                        break;
-                }
-            }
+            
+
             
             //Effective from date/time
             //(2069) Date and/or time at which specified event or document becomes effective.
@@ -386,9 +395,10 @@ EOD;
             //$ecnt->ecnt_eu_status` enum('C','N') DEFAULT NULL,
             //$ecnt->ecnt_imo_code` varchar(50) DEFAULT NULL,
                 
-            var_dump($ecnt->ecnt_fwd);
             if(!$ecnt->save()){
                 var_dump($ecnt->errors);
+            }else{
+                $ecnt->recalc();
             }
             if(!empty($error)){
                 var_dump($error);
@@ -399,105 +409,117 @@ EOD;
             }            
             $EdiReader->resetErrors();
         }elseif($terminal == 'RIXCT'){
-            $ecnt = EcntContainer::model()->findByAttributes(array('ecnt_edifact_id' => $edifact->id));
-            if(!$ecnt){
-                $ecnt = new EcntContainer();
-            }
             
-            $ecnt->ecnt_edifact_id = $edifact->id;
-            $ecnt->ecnt_terminal = $terminal;
-            $ecnt->ecnt_message_type = $MessageType;
+            if($MessageType == 'COARRI'){
+                //2005 Date/time/period qualifier: code
+                //‘203' Execution date
+                $ecnt->ecnt_datetime = $EdiReader->readEdiSegmentDTM(203);     
+                
+                //TDT        8067 Mode of transport, coded: codes
+                //                '1' maritime transport
+                //                '8' inland water transport
+                $ModeOfTransport = $EdiReader->readEdiDataValue(['TDT',[1=>20]],3,1);
+                $LoadingLocationIdentification = $EdiReader->readEdiDataValue(['LOC',[1=>9]],2,0);
+                $DischargingLocationIdentification = $EdiReader->readEdiDataValue(['LOC',[1=>11]],2,0);
+                if($LoadingLocationIdentification == 'LVRIX'){
+                    $ecnt->ecnt_operation = EcntContainer::ECNT_OPERATION_VESSEL_LOAD;   
+                    $ecnt->ecnt_ib_carrier = 'TRUCK';
+                    //$ecnt->ecnt_ob_carrier = 'TRUCK'; 
+                }elseif($DischargingLocationIdentification == 'LVRIX'){
+                    $ecnt->ecnt_operation = EcntContainer::ECNT_OPERATION_VESSEL_DISCHARGE; 
+                    //$ecnt->ecnt_ib_carrier = 'TRUCK'; 
+                    $ecnt->ecnt_ob_carrier = 'TRUCK';                    
+                }else{
+                    $error[] = 'Neatrada operation - vessel load/unload!'  
+                        .'/Loading:'.$LoadingLocationIdentification
+                        .'/Discharging:'.$DischargingLocationIdentification 
+                            ;
+                }     
+                
+                 //PARTY QUALIFIER 
+                //CA Carrier
+                //(3126) Party undertaking or arranging transport of goods between named points.
+                $ecnt->ecnt_fwd = $EdiReader->readEdiDataValue(['NAD', ['1' => 'CA']], 2,0);
+                
+                //8051 TRANSPORT STAGE QUALIFIER: 
+                //  '20' (main carriage)                
+                // Read: 8028 CONVEYANCE REFERENCE NUMBER: the vessel operator's loading voyage number
+                $ecnt->ecnt_transport_id = $EdiReader->readEdiDataValue(['TDT', ['1' => 20]], 2);                
+         
+            }elseif($MessageType == 'CODECO'){
             
-            // 1001 Document name code 
-            $DocumentNameCode = $EdiReader->readEdiDataValue('BGM', 1);
-            if($DocumentNameCode == 34){
-                $ecnt->ecnt_operation = EcntContainer::ECNT_OPERATION_TRUCK_IN;   
-            }elseif($DocumentNameCode == 36){
-                $ecnt->ecnt_operation = EcntContainer::ECNT_OPERATION_TRUCK_OUT;   
-            }else{
-                $error[] = 'Neatrada operation - truck in/out';
-            }            
-            
-            $ecnt->ecnt_container_nr = $EdiReader->readEdiDataValue('EQD', 2);
-            
-            //$ecnt->ecnt_length` enum('40','20') DEFAULT NULL,
-            $ecnt->ecnt_iso_type = $EdiReader->readEdiDataValue('EQD', 3,0);
+                $ecnt->ecnt_fwd = $EdiReader->readEdiDataValue(['NAD', ['1' => 'CF']], 2);
+                // 1001 Document name code 
+                $DocumentNameCode = $EdiReader->readEdiDataValue('BGM', 1);
+                if($DocumentNameCode == 34){
+                    $ecnt->ecnt_operation = EcntContainer::ECNT_OPERATION_TRUCK_IN;   
+                }elseif($DocumentNameCode == 36){
+                    $ecnt->ecnt_operation = EcntContainer::ECNT_OPERATION_TRUCK_OUT;   
+                }else{
+                    $error[] = 'Neatrada operation - truck in/out';
+                }            
 
-            if(!empty($ecnt->ecnt_iso_type)){
-                switch (substr($ecnt->ecnt_iso_type,0,1)) {
-                    case '2':
-                        $ecnt->ecnt_length = EcntContainer::ECNT_LENGTH_20;
-                        break;
-                    case '4':
-                        $ecnt->ecnt_length = EcntContainer::ECNT_LENGTH_40;
-                        break;
-                    default:
-                        $error[] = 'Nekorekts ISO TYPR:'.  $ecnt->ecnt_iso_type;
-                        break;
-                }
-            }
-            
-            
-          //8169 - fullemptyIndicatorCoded
-            //To indicate the extent to which the equipment is full or empty.
-            $FullEmpty = $EdiReader->readEdiDataValue('EQD', 6);
-            if($FullEmpty == 4){
-                $ecnt->ecnt_statuss = EcntContainer::ECNT_STATUSS_EMPTY;
-            }elseif($FullEmpty == 5){
-                $ecnt->ecnt_statuss = EcntContainer::ECNT_STATUSS_FULL;
+              //8169 - fullemptyIndicatorCoded
+                //To indicate the extent to which the equipment is full or empty.
+                $FullEmpty = $EdiReader->readEdiDataValue('EQD', 6);
+                if($FullEmpty == 4){
+                    $ecnt->ecnt_statuss = EcntContainer::ECNT_STATUSS_EMPTY;
+                }elseif($FullEmpty == 5){
+                    $ecnt->ecnt_statuss = EcntContainer::ECNT_STATUSS_FULL;
+                }else{
+                    $error[] = 'Neatrada empty/full';
+                }            
+
+                //Effective from date/time
+                //(2069) Date and/or time at which specified event or document becomes effective.
+                $ecnt->ecnt_datetime = $EdiReader->readEdiSegmentDTM('181');
+
+                //20 - Main-carriage transport
+                //The primary stage in the movement of cargo from the point of origin to the intended destination.
+
+
+                //LOC Place of loading
+                // 9 - [3334] Seaport, airport, freight terminal, 
+                //              rail station or other place at which the goods (cargo) 
+                //              are loaded on to the means of transport being used for their carriage.
+                //    TRUCK IN          
+                //11 - Place of discharge
+                //      [3392] Seaport, airport, freight terminal, rail station or other 
+                //      place at which goods are unloaded from the means of transport 
+                //      having been used for their carriage.
+                // TRUCK OUT            
+    //            $LocationFunctionPlaceLoading =  $EdiReader->readEdiDataValue(['LOC',[1=>9]],2);
+    //            $LocationFunctionPlaceDischarge =  $EdiReader->readEdiDataValue(['LOC',[1=>11]],2);
+    //            if(!empty($LocationFunctionPlaceLoading)){
+    //                $ecnt->ecnt_operation = EcntContainer::ECNT_OPERATION_TRUCK_IN;   
+    //            }elseif(!empty($LocationFunctionPlaceDischarge)){
+    //                $ecnt->ecnt_operation = EcntContainer::ECNT_OPERATION_TRUCK_OUT;   
+    //            }else{
+    //                $error[] = 'Neatrada operation - truck in/out';
+    //            }
+
+
+                //id: 1131 - codeListQualifier     Identification of a code list.
+                // TER - TERMINAL
+                //$LocationFunctionPlaceLoading =  $EdiReader->readEdiDataValue(['LOC',[1=>165]],3,1);
+
+                $ecnt->ecnt_transport_id = $EdiReader->readEdiDataValue(['TDT', ['1' => '1']], 8, 0);
+                if(!empty($ecnt->ecnt_transport_id)){
+                    $ecnt->ecnt_ib_carrier = 'TRUCK';
+                }                
+                
             }else{
-                $error[] = 'Neatrada empty/full';
-            }            
-            
-            //Effective from date/time
-            //(2069) Date and/or time at which specified event or document becomes effective.
-            $ecnt->ecnt_datetime = $EdiReader->readEdiSegmentDTM('181');
-            
-            //20 - Main-carriage transport
-            //The primary stage in the movement of cargo from the point of origin to the intended destination.
-            
-            
-            //LOC Place of loading
-            // 9 - [3334] Seaport, airport, freight terminal, 
-            //              rail station or other place at which the goods (cargo) 
-            //              are loaded on to the means of transport being used for their carriage.
-            //    TRUCK IN          
-            //11 - Place of discharge
-            //      [3392] Seaport, airport, freight terminal, rail station or other 
-            //      place at which goods are unloaded from the means of transport 
-            //      having been used for their carriage.
-            // TRUCK OUT            
-//            $LocationFunctionPlaceLoading =  $EdiReader->readEdiDataValue(['LOC',[1=>9]],2);
-//            $LocationFunctionPlaceDischarge =  $EdiReader->readEdiDataValue(['LOC',[1=>11]],2);
-//            if(!empty($LocationFunctionPlaceLoading)){
-//                $ecnt->ecnt_operation = EcntContainer::ECNT_OPERATION_TRUCK_IN;   
-//            }elseif(!empty($LocationFunctionPlaceDischarge)){
-//                $ecnt->ecnt_operation = EcntContainer::ECNT_OPERATION_TRUCK_OUT;   
-//            }else{
-//                $error[] = 'Neatrada operation - truck in/out';
-//            }
-            
-            
-            //id: 1131 - codeListQualifier     Identification of a code list.
-            // TER - TERMINAL
-            //$LocationFunctionPlaceLoading =  $EdiReader->readEdiDataValue(['LOC',[1=>165]],3,1);
-            
-            $ecnt->ecnt_transport_id = $EdiReader->readEdiDataValue(['TDT', ['1' => '1']], 8, 0);
-            if(!empty($ecnt->ecnt_transport_id)){
-                $ecnt->ecnt_ib_carrier = 'TRUCK';
+                $error[] = 'Unknown message type:' . $MessageType;
             }
-            //$ecnt->ecnt_ob_carrier` varchar(50) DEFAULT NULL,
+
+
             $ecnt->ecnt_weight = $EdiReader->readEdiDataValue(['MEA', ['2' => 'G']], 3, 1);
-            
-  
-            //$ecnt->ecnt_line` varchar(50) DEFAULT NULL,
-            $ecnt->ecnt_fwd = $EdiReader->readEdiDataValue(['NAD', ['1' => 'CF']], 2);
             $ecnt->ecnt_booking = $EdiReader->readEdiDataValue(['RFF', ['1.0' => 'BN']], 1,1);
-            //$ecnt->ecnt_eu_status` enum('C','N') DEFAULT NULL,
-            //$ecnt->ecnt_imo_code` varchar(50) DEFAULT NULL,
                     
             if(!$ecnt->save()){
                 var_dump($ecnt->errors);
+            }else{
+                $ecnt->recalc();
             }
             if(!empty($error)){
                 var_dump($error);
