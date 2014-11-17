@@ -94,9 +94,9 @@ class EtprTerminalPrices extends BaseEtprTerminalPrices
               GROUP_CONCAT(	
                   CASE 
                     WHEN etpr_day_to <= :days 
-                        THEN CONCAT(etpr_day_to,'x',etpr_price)	
+                        THEN CONCAT(etpr_day_to,'(days) x ',etpr_price,' EUR')	
                     WHEN etpr_day_from <= :days AND  etpr_day_to >= :days 
-                        THEN  CONCAT(:days - etpr_day_from + 1,'x',etpr_price)
+                        THEN  CONCAT(:days - etpr_day_from + 1,'(days) x ',etpr_price,' EUR')
                         ELSE '0'
                   END 
                   SEPARATOR  '+'
@@ -128,7 +128,8 @@ class EtprTerminalPrices extends BaseEtprTerminalPrices
                 ROUND(etpr_price * etpr_imdg_coefficient,2) imdg_price,
                 ROUND(etpr_price * etpr_h68_2020_coefficient,2) h68_2020_price,
                 ROUND(etpr_price * etpr_hour_holiday_coefficient,2) holiday_price,
-                ecnt_datetime
+                ecnt_datetime,
+                etpr_operation
               FROM
                 ecnt_container 
                 INNER JOIN etpr_terminal_prices 
@@ -164,28 +165,28 @@ class EtprTerminalPrices extends BaseEtprTerminalPrices
         if(!$data){
             return array(
                 'amt' => 0,
-                'amt_formul' => 'Neatrada',
+                'amt_formul' => 'Error:Neatrada cenu',
             );
         }
 
         if(self::isHollidayHour($data['ecnt_datetime'])){
             return array(
                 'amt' => $data['holiday_price'],
-                'amt_formul' => 'Holliday',
+                'amt_formul' => $data['etpr_operation']. ' - Holliday',
             );            
         }
         
         if(self::isExtraHour($data['ecnt_datetime'])){
             return array(
                 'amt' => $data['h68_2020_price'],
-                'amt_formul' => 'Extra Hour',
+                'amt_formul' => $data['etpr_operation']. ' - Extra Hour',
             );            
             
         }
 
         return array(
                 'amt' => $data['etpr_price'],
-                'amt_formul' => 'Normal',
+                'amt_formul' => $data['etpr_operation']. ' - Regular',
             );  
         
     }

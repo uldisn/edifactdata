@@ -100,6 +100,22 @@ $this->widget('TbGridView',
                 'name' => 'ecnt_imo_code',
             ),
             array(
+                'name' => 'ecnt_action_amt',
+                'type' => 'raw',
+                'value' => 'CHtml::tag("span", array("data-toggle" => "tooltip","title"=>"=".$data->ecnt_action_calc_notes), $data->ecnt_action_amt)',
+                'htmlOptions' => array(
+                    'class' => 'numeric-column',
+                ),                
+            ),
+            array(
+                'name' => 'ecnt_time_amt',
+                'type' => 'raw',
+                'value' => 'CHtml::tag("span", array("data-toggle" => "tooltip","title"=>"=".$data->ecnt_time_calc_notes), $data->ecnt_time_amt)',
+                'htmlOptions' => array(
+                    'class' => 'numeric-column',
+                ),                
+            ),
+            array(
                 'class' => 'editable.EditableColumn',
                 'name' => 'ecnt_notes',
                 'editable' => array(

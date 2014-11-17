@@ -49,6 +49,11 @@ class EcntContainer extends BaseEcntContainer
         }
         return new CActiveDataProvider(get_class($this), array(
             'criteria' => $this->searchCriteria($criteria),
+            'sort'=>array(
+                'defaultOrder'=>'ecnt_datetime',
+                ),
+
+            
         ));
     }
 
@@ -146,8 +151,36 @@ class EcntContainer extends BaseEcntContainer
             
         }    
         
-
-        
     }
+    
+    static function getContainerActionAmtTotal($ecpr_id){
+        $sql = "
+            SELECT 
+                SUM(ecnt_action_amt) action_amt 
+            FROM
+                ecnt_container 
+            WHERE ecnt_ecpr_id = :ecpr_id 
+            ";
+        
+        $rawData = Yii::app()->db->createCommand($sql);
+             
+        $rawData->bindParam(":ecpr_id", $ecpr_id, PDO::PARAM_INT);      
+        return $rawData->queryScalar();
+    }    
+    
+    static function getContainerTimeAmtTotal($ecpr_id){
+        $sql = "
+            SELECT 
+                SUM(ecnt_time_amt) action_amt 
+            FROM
+                ecnt_container 
+            WHERE ecnt_ecpr_id = :ecpr_id 
+            ";
+        
+        $rawData = Yii::app()->db->createCommand($sql);
+             
+        $rawData->bindParam(":ecpr_id", $ecpr_id, PDO::PARAM_INT);      
+        return $rawData->queryScalar();
+    }    
     
 }

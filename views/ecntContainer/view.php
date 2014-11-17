@@ -93,6 +93,18 @@ $cancel_buton = $this->widget("bootstrap.widgets.TbButton", array(
                     'name' => 'ecnt_imo_code',
                 ),
                 array(
+                    'name' => 'ecnt_action_amt',
+                ),
+                array(
+                    'name' => 'ecnt_action_calc_notes',
+                ),
+                array(
+                    'name' => 'ecnt_time_amt',
+                ),
+                array(
+                    'name' => 'ecnt_time_calc_notes',
+                ),
+                array(
                     'name' => 'ecnt_notes',
                     'type' => 'raw',
                     'value' => $this->widget(
