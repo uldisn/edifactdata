@@ -56,4 +56,26 @@ class Edifact extends BaseEdifact
             'criteria' => $this->searchCriteria($criteria),
         ));
     }
+    
+    public function getBgm1Description(){
+        switch ($this->bgm_1_id) {
+
+            case 34:
+                return 'Transport Equipment Gate In Report';
+                break;
+            case 36:
+                return 'Transport Equipment Gate Out Report';
+                break;
+            case 98:
+                return 'Arrival information';
+                break;
+            case 270:
+                return 'Delivery note';
+                break;
+
+            default:
+                return '-';
+                break;
+        }
+    }
 }

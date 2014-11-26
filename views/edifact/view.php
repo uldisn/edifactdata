@@ -44,6 +44,10 @@ $cancel_buton = $this->widget("bootstrap.widgets.TbButton", array(
                 ),
 
                 array(
+                    'name' => 'bgm_1_id',
+                    'value' => $model->bgm_1_id . ' - ' . $model->getBgm1Description(),
+                ),
+                array(
                     'name' => 'prep_datetime',
                 ),
 
@@ -56,6 +60,14 @@ $cancel_buton = $this->widget("bootstrap.widgets.TbButton", array(
                 ),
                 array(
                     'name' => 'create_datetime',
+                ),
+                array(
+                    'name' => 'status',
+                ),
+                array(
+                    'name' => 'error',
+                    'type' => 'raw',
+                    'value' => str_replace(PHP_EOL, '<br/>', $model->error),
                 ),
            ),
         )); ?>

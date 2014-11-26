@@ -60,6 +60,21 @@ class EcntContainer extends BaseEcntContainer
     public function beforeSave()
     {
         
+        //nosaka garumu
+        if(!empty($this->ecnt_iso_type)){
+            switch (substr($this->ecnt_iso_type,0,1)) {
+                case '2':
+                    $this->ecnt_length = EcntContainer::ECNT_LENGTH_20;
+                    break;
+                case '4':
+                    $this->ecnt_length = EcntContainer::ECNT_LENGTH_40;
+                    break;
+                default:
+                    $error[] = 'Nekorekts ISO TYPR:'.  $this->ecnt_iso_type;
+                    break;
+            }
+        } 
+        
         //sameklee procesing record
         if(empty($this->ecnt_ecpr_id) 
                 && $this->ecnt_operation != EcntContainer::ECNT_OPERATION_TRUCK_IN 
@@ -182,5 +197,47 @@ class EcntContainer extends BaseEcntContainer
         $rawData->bindParam(":ecpr_id", $ecpr_id, PDO::PARAM_INT);      
         return $rawData->queryScalar();
     }    
+    
+    static public function saveEdiData($ecnt_data,$EdiReader,$error,$edifact){
+        $error = array_merge($error,$EdiReader->errors());
+
+        $edifact->bgm_1_id = $EdiReader->readEdiDataValueReq('BGM', 1);
+        
+        $edifact->error = '';
+        if(!empty($error)){
+            $edifact->error = implode(PHP_EOL,$error);
+            $edifact->status = Edifact::STATUS_ERROR;
+            $edifact->save();
+            return false;
+        }        
+        
+        //create model
+        $find_attributes = array(
+            'ecnt_edifact_id' => $edifact->id,
+            'ecnt_container_nr' => $ecnt_data['ecnt_container_nr'],
+        );
+        $ecnt = EcntContainer::model()->findByAttributes($find_attributes);
+        if(!$ecnt){
+            $ecnt_data['ecnt_edifact_id'] = $edifact->id;
+            $ecnt = new EcntContainer();
+        }  
+       $ecnt->attributes = $ecnt_data;
+       
+        if(!$ecnt->save()){
+            $edifact->error = print_r($ecnt->errors,true);
+            $edifact->status = Edifact::STATUS_ERROR;
+            $edifact->save();            
+            return false;
+        }    
+        $ecnt->recalc();
+        
+        $edifact->error = '';
+        $edifact->status = Edifact::STATUS_PROCESSED;
+        $edifact->save();
+        
+        return true;
+        
+        
+    }
     
 }

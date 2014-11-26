@@ -45,6 +45,9 @@ $this->widget('TbGridView',
                 'name' => 'terminal',
             ),
             array(
+                'name' => 'bgm_1_id',
+            ),
+            array(
                 'name' => 'prep_datetime',
             ),
             array(
@@ -56,6 +59,10 @@ $this->widget('TbGridView',
             ),
             array(
                 'name' => 'create_datetime',
+            ),
+            array(
+                'name' => 'status',
+                'filter' => $model->getEnumFieldLabels('status'),
             ),
 
             array(
