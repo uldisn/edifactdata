@@ -135,10 +135,6 @@ EOD;
                     if ($structure->parts[$i]->ifdparameters) {
                         foreach ($structure->parts[$i]->dparameters as $object) {
                             if (strtolower($object->attribute) == 'filename') {
-                                $file_ext = pathinfo($object->value, PATHINFO_EXTENSION);
-                                if($file_ext != 'edi'){
-                                    continue;
-                                }
                                 $attachments[$i]['is_attachment'] = true;
                                 $attachments[$i]['filename'] = $object->value;
                             }
@@ -174,12 +170,16 @@ EOD;
                     continue;
                 }
 
-
                 $filename = $attachment['name'];
                 if (empty($filename))
                     $filename = $attachment['filename'];
+                
+                //validate file extension
+                $file_ext = pathinfo($filename, PATHINFO_EXTENSION);
+                if($file_ext != 'edi'){
+                    continue;
+                }                
 
-                echo 'A';
                 $ra[] = array(
                     'filename' => $filename,
                     'data' => $attachment['attachment'],
