@@ -64,6 +64,11 @@ EOD;
                 }
             }
         }
+
+        if ($args[0] == '7days') {
+            $count = EcerErrors::mark7DaysNoMoving();
+            echo '7days no moving: ' . $count . PHP_EOL;
+        }
     }
 
     public function connectPop3($strHost, $strUser, $strPass) {
@@ -390,7 +395,7 @@ EOD;
                     
                     $ecnt_data['ecnt_weight'] = $ConEdiReader->readEdiDataValue(['MEA', ['2' => 'G']], 3, 1);        
                     $ecnt_data['ecnt_booking'] = $ConEdiReader->readEdiDataValue(['RFF', ['1.0' => 'BN']], 1,1);
-                    
+                    $ecnt_data['ecnt_statuss'] = $ConEdiReader->readFullEmpty(); 
                     EcntContainer::saveEdiData($ecnt_data,$EdiReader,$error,$edifact);
                 }
                 return;
@@ -401,6 +406,7 @@ EOD;
                 $ecnt_data['ecnt_terminal'] = $terminal;
                 $ecnt_data['ecnt_container_nr'] = $EdiReader->readEdiDataValue('EQD', 2);        
                 $ecnt_data['ecnt_iso_type'] = $EdiReader->readEdiDataValue('EQD', 3,0);
+                $ecnt_data['ecnt_message_type'] = $MessageType;   
                 
                 
                 //2005 Date/time/period qualifier: code
@@ -436,7 +442,7 @@ EOD;
                 if(!empty($ecnt_data['ecnt_transport_id'])){
                     $ecnt_data['ecnt_ib_carrier'] = 'TRUCK';
                 }       
-                $ecnt_data['ecnt_statuss'] = $EdiReader->readFullEmpty();         
+                $ecnt_data['ecnt_statuss'] = $EdiReader->readFullEmpty();     
                 
                 EcntContainer::saveEdiData($ecnt_data,$EdiReader,$error,$edifact); 
                 return;
@@ -451,6 +457,7 @@ EOD;
             if($MessageType == 'COARRI'){
                 $ecnt_data = [];
                 $ecnt_data['ecnt_terminal'] = $terminal;
+                $ecnt_data['ecnt_message_type'] = $MessageType;   
                 
                 //2005 Date/time/period qualifier: code
                 //‘203' Execution date
@@ -487,14 +494,15 @@ EOD;
                 
                 $ecnt_data['ecnt_weight'] = $EdiReader->readEdiDataValue(['MEA', ['2' => 'G']], 3, 1);        
                 $ecnt_data['ecnt_booking'] = $EdiReader->readEdiDataValue(['RFF', ['1.0' => 'BN']], 1,1); 
-                
+                $ecnt_data['ecnt_statuss'] = $EdiReader->readFullEmpty(); 
                 EcntContainer::saveEdiData($ecnt_data,$EdiReader,$error,$edifact);  
                 return true;
          
             }elseif($MessageType == 'CODECO'){
                 
                 $ecnt_data = [];
-                $ecnt_data['ecnt_terminal'] = $terminal;                
+                $ecnt_data['ecnt_terminal'] = $terminal;  
+                $ecnt_data['ecnt_message_type'] = $MessageType;   
                 
                 $ecnt_data['ecnt_container_nr'] = $EdiReader->readEdiDataValue('EQD', 2);        
                 $ecnt_data['ecnt_iso_type'] = $EdiReader->readEdiDataValue('EQD', 3,0);
@@ -511,16 +519,6 @@ EOD;
                     $error[] = 'Neatrada operation - truck in/out';
                 }            
 
-              //8169 - fullemptyIndicatorCoded
-                //To indicate the extent to which the equipment is full or empty.
-//                $FullEmpty = $EdiReader->readEdiDataValue('EQD', 6);
-//                if($FullEmpty == 4){
-//                    $ecnt_data['ecnt_statuss = EcntContainer::ECNT_STATUSS_EMPTY;
-//                }elseif($FullEmpty == 5){
-//                    $ecnt_data['ecnt_statuss = EcntContainer::ECNT_STATUSS_FULL;
-//                }else{
-//                    $error[] = 'Neatrada empty/full';
-//                }            
                 $ecnt_data['ecnt_statuss'] = $EdiReader->readFullEmpty();
                 //Effective from date/time
                 //(2069) Date and/or time at which specified event or document becomes effective.

@@ -9,6 +9,7 @@
  * @property string $ecnt_ecpr_id
  * @property string $ecnt_terminal
  * @property string $ecnt_message_type
+ * @property string $ecnt_move_code
  * @property string $ecnt_container_nr
  * @property string $ecnt_datetime
  * @property string $ecnt_operation
@@ -30,8 +31,10 @@
  * @property string $ecnt_time_amt
  * @property string $ecnt_action_calc_notes
  * @property string $ecnt_time_calc_notes
+ * @property string $ecnt_error
  *
  * Relations of table "ecnt_container" available as properties of the model:
+ * @property EcerErrors[] $ecerErrors
  * @property Edifact $ecntEdifact
  * @property EcprContainerProcesing $ecntEcpr
  * @property EtprTerminalPrices $ecntEtpr
@@ -43,6 +46,14 @@ abstract class BaseEcntContainer extends CActiveRecord
     /**
     * ENUM field values
     */
+    const ECNT_MOVE_CODE_LV = 'LV';
+    const ECNT_MOVE_CODE_TF = 'TF';
+    const ECNT_MOVE_CODE_VF = 'VF';
+    const ECNT_MOVE_CODE_VE = 'VE';
+    const ECNT_MOVE_CODE_DF = 'DF';
+    const ECNT_MOVE_CODE_DE = 'DE';
+    const ECNT_MOVE_CODE_LD = 'LD';
+    const ECNT_MOVE_CODE_TE = 'TE';
     const ECNT_OPERATION_TRUCK_IN = 'TRUCK_IN';
     const ECNT_OPERATION_TRUCK_OUT = 'TRUCK_OUT';
     const ECNT_OPERATION_VESSEL_LOAD = 'VESSEL_LOAD';
@@ -53,6 +64,8 @@ abstract class BaseEcntContainer extends CActiveRecord
     const ECNT_STATUSS_FULL = 'FULL';
     const ECNT_EU_STATUS_C = 'C';
     const ECNT_EU_STATUS_N = 'N';
+    const ECNT_ERROR_SQN = 'SQN';
+    const ECNT_ERROR_7DAYS = '7DAYS';
     
     var $enum_labels = false;  
 
@@ -71,18 +84,20 @@ abstract class BaseEcntContainer extends CActiveRecord
         return array_merge(
             parent::rules(), array(
                 array('ecnt_edifact_id, ecnt_terminal', 'required'),
-                array('ecnt_ecpr_id, ecnt_message_type, ecnt_container_nr, ecnt_datetime, ecnt_operation, ecnt_transport_id, ecnt_length, ecnt_iso_type, ecnt_ib_carrier, ecnt_ob_carrier, ecnt_weight, ecnt_statuss, ecnt_line, ecnt_fwd, ecnt_booking, ecnt_eu_status, ecnt_imo_code, ecnt_notes, ecnt_etpr_id, ecnt_action_amt, ecnt_time_amt, ecnt_action_calc_notes, ecnt_time_calc_notes', 'default', 'setOnEmpty' => true, 'value' => null),
+                array('ecnt_ecpr_id, ecnt_message_type, ecnt_move_code, ecnt_container_nr, ecnt_datetime, ecnt_operation, ecnt_transport_id, ecnt_length, ecnt_iso_type, ecnt_ib_carrier, ecnt_ob_carrier, ecnt_weight, ecnt_statuss, ecnt_line, ecnt_fwd, ecnt_booking, ecnt_eu_status, ecnt_imo_code, ecnt_notes, ecnt_etpr_id, ecnt_action_amt, ecnt_time_amt, ecnt_action_calc_notes, ecnt_time_calc_notes, ecnt_error', 'default', 'setOnEmpty' => true, 'value' => null),
                 array('ecnt_weight, ecnt_etpr_id', 'numerical', 'integerOnly' => true),
                 array('ecnt_action_amt, ecnt_time_amt', 'type','type'=>'float'),
                 array('ecnt_edifact_id, ecnt_ecpr_id, ecnt_terminal, ecnt_message_type', 'length', 'max' => 10),
                 array('ecnt_container_nr, ecnt_transport_id, ecnt_iso_type, ecnt_ib_carrier, ecnt_ob_carrier, ecnt_line, ecnt_fwd, ecnt_booking, ecnt_imo_code', 'length', 'max' => 50),
                 array('ecnt_action_amt, ecnt_time_amt', 'length', 'max' => 9),
                 array('ecnt_datetime, ecnt_notes, ecnt_action_calc_notes, ecnt_time_calc_notes', 'safe'),
+                array('ecnt_move_code', 'in', 'range' => array(self::ECNT_MOVE_CODE_LV, self::ECNT_MOVE_CODE_TF, self::ECNT_MOVE_CODE_VF, self::ECNT_MOVE_CODE_VE, self::ECNT_MOVE_CODE_DF, self::ECNT_MOVE_CODE_DE, self::ECNT_MOVE_CODE_LD, self::ECNT_MOVE_CODE_TE)),
                 array('ecnt_operation', 'in', 'range' => array(self::ECNT_OPERATION_TRUCK_IN, self::ECNT_OPERATION_TRUCK_OUT, self::ECNT_OPERATION_VESSEL_LOAD, self::ECNT_OPERATION_VESSEL_DISCHARGE)),
                 array('ecnt_length', 'in', 'range' => array(self::ECNT_LENGTH_40, self::ECNT_LENGTH_20)),
                 array('ecnt_statuss', 'in', 'range' => array(self::ECNT_STATUSS_EMPTY, self::ECNT_STATUSS_FULL)),
                 array('ecnt_eu_status', 'in', 'range' => array(self::ECNT_EU_STATUS_C, self::ECNT_EU_STATUS_N)),
-                array('ecnt_id, ecnt_edifact_id, ecnt_ecpr_id, ecnt_terminal, ecnt_message_type, ecnt_container_nr, ecnt_datetime, ecnt_operation, ecnt_transport_id, ecnt_length, ecnt_iso_type, ecnt_ib_carrier, ecnt_ob_carrier, ecnt_weight, ecnt_statuss, ecnt_line, ecnt_fwd, ecnt_booking, ecnt_eu_status, ecnt_imo_code, ecnt_notes, ecnt_etpr_id, ecnt_action_amt, ecnt_time_amt, ecnt_action_calc_notes, ecnt_time_calc_notes', 'safe', 'on' => 'search'),
+                array('ecnt_error', 'in', 'range' => array(self::ECNT_ERROR_SQN, self::ECNT_ERROR_7DAYS)),
+                array('ecnt_id, ecnt_edifact_id, ecnt_ecpr_id, ecnt_terminal, ecnt_message_type, ecnt_move_code, ecnt_container_nr, ecnt_datetime, ecnt_operation, ecnt_transport_id, ecnt_length, ecnt_iso_type, ecnt_ib_carrier, ecnt_ob_carrier, ecnt_weight, ecnt_statuss, ecnt_line, ecnt_fwd, ecnt_booking, ecnt_eu_status, ecnt_imo_code, ecnt_notes, ecnt_etpr_id, ecnt_action_amt, ecnt_time_amt, ecnt_action_calc_notes, ecnt_time_calc_notes, ecnt_error', 'safe', 'on' => 'search'),
             )
         );
     }
@@ -107,6 +122,7 @@ abstract class BaseEcntContainer extends CActiveRecord
     {
         return array_merge(
             parent::relations(), array(
+                'ecerErrors' => array(self::HAS_MANY, 'EcerErrors', 'ecer_ecnt_id'),
                 'ecntEdifact' => array(self::BELONGS_TO, 'Edifact', 'ecnt_edifact_id'),
                 'ecntEcpr' => array(self::BELONGS_TO, 'EcprContainerProcesing', 'ecnt_ecpr_id'),
                 'ecntEtpr' => array(self::BELONGS_TO, 'EtprTerminalPrices', 'ecnt_etpr_id'),
@@ -124,6 +140,7 @@ abstract class BaseEcntContainer extends CActiveRecord
             'ecnt_ecpr_id' => Yii::t('EdifactDataModule.model', 'Ecnt Ecpr'),
             'ecnt_terminal' => Yii::t('EdifactDataModule.model', 'Ecnt Terminal'),
             'ecnt_message_type' => Yii::t('EdifactDataModule.model', 'Ecnt Message Type'),
+            'ecnt_move_code' => Yii::t('EdifactDataModule.model', 'Ecnt Move Code'),
             'ecnt_container_nr' => Yii::t('EdifactDataModule.model', 'Ecnt Container Nr'),
             'ecnt_datetime' => Yii::t('EdifactDataModule.model', 'Ecnt Datetime'),
             'ecnt_operation' => Yii::t('EdifactDataModule.model', 'Ecnt Operation'),
@@ -145,6 +162,7 @@ abstract class BaseEcntContainer extends CActiveRecord
             'ecnt_time_amt' => Yii::t('EdifactDataModule.model', 'Ecnt Time Amt'),
             'ecnt_action_calc_notes' => Yii::t('EdifactDataModule.model', 'Ecnt Action Calc Notes'),
             'ecnt_time_calc_notes' => Yii::t('EdifactDataModule.model', 'Ecnt Time Calc Notes'),
+            'ecnt_error' => Yii::t('EdifactDataModule.model', 'Ecnt Error'),
         );
     }
 
@@ -154,6 +172,16 @@ abstract class BaseEcntContainer extends CActiveRecord
             return $this->enum_labels;
         }    
         $this->enum_labels =  array(
+           'ecnt_move_code' => array(
+               self::ECNT_MOVE_CODE_LV => Yii::t('EdifactDataModule.model', 'ECNT_MOVE_CODE_LV'),
+               self::ECNT_MOVE_CODE_TF => Yii::t('EdifactDataModule.model', 'ECNT_MOVE_CODE_TF'),
+               self::ECNT_MOVE_CODE_VF => Yii::t('EdifactDataModule.model', 'ECNT_MOVE_CODE_VF'),
+               self::ECNT_MOVE_CODE_VE => Yii::t('EdifactDataModule.model', 'ECNT_MOVE_CODE_VE'),
+               self::ECNT_MOVE_CODE_DF => Yii::t('EdifactDataModule.model', 'ECNT_MOVE_CODE_DF'),
+               self::ECNT_MOVE_CODE_DE => Yii::t('EdifactDataModule.model', 'ECNT_MOVE_CODE_DE'),
+               self::ECNT_MOVE_CODE_LD => Yii::t('EdifactDataModule.model', 'ECNT_MOVE_CODE_LD'),
+               self::ECNT_MOVE_CODE_TE => Yii::t('EdifactDataModule.model', 'ECNT_MOVE_CODE_TE'),
+           ),
            'ecnt_operation' => array(
                self::ECNT_OPERATION_TRUCK_IN => Yii::t('EdifactDataModule.model', 'ECNT_OPERATION_TRUCK_IN'),
                self::ECNT_OPERATION_TRUCK_OUT => Yii::t('EdifactDataModule.model', 'ECNT_OPERATION_TRUCK_OUT'),
@@ -171,6 +199,10 @@ abstract class BaseEcntContainer extends CActiveRecord
            'ecnt_eu_status' => array(
                self::ECNT_EU_STATUS_C => Yii::t('EdifactDataModule.model', 'ECNT_EU_STATUS_C'),
                self::ECNT_EU_STATUS_N => Yii::t('EdifactDataModule.model', 'ECNT_EU_STATUS_N'),
+           ),
+           'ecnt_error' => array(
+               self::ECNT_ERROR_SQN => Yii::t('EdifactDataModule.model', 'ECNT_ERROR_SQN'),
+               self::ECNT_ERROR_7DAYS => Yii::t('EdifactDataModule.model', 'ECNT_ERROR_7DAYS'),
            ),
             );
         return $this->enum_labels;
@@ -213,6 +245,7 @@ abstract class BaseEcntContainer extends CActiveRecord
         $criteria->compare('t.ecnt_ecpr_id', $this->ecnt_ecpr_id);
         $criteria->compare('t.ecnt_terminal', $this->ecnt_terminal, true);
         $criteria->compare('t.ecnt_message_type', $this->ecnt_message_type, true);
+        $criteria->compare('t.ecnt_move_code', $this->ecnt_move_code);
         $criteria->compare('t.ecnt_container_nr', $this->ecnt_container_nr, true);
         $criteria->compare('t.ecnt_datetime', $this->ecnt_datetime, true);
         $criteria->compare('t.ecnt_operation', $this->ecnt_operation);
@@ -234,6 +267,7 @@ abstract class BaseEcntContainer extends CActiveRecord
         $criteria->compare('t.ecnt_time_amt', $this->ecnt_time_amt, true);
         $criteria->compare('t.ecnt_action_calc_notes', $this->ecnt_action_calc_notes, true);
         $criteria->compare('t.ecnt_time_calc_notes', $this->ecnt_time_calc_notes, true);
+        $criteria->compare('t.ecnt_error', $this->ecnt_error);
 
 
         return $criteria;

@@ -20,10 +20,9 @@ $this->setPageTitle(Yii::t('EdifactDataModule.model', 'Containers'));
 $this->widget('TbGridView',
     array(
         'id' => 'ecnt-container-grid',
-        'dataProvider' => $model->search(),
+        'dataProvider' => $model->searchAdmin(),
         'filter' => $model,
-        #'responsiveTable' => true,
-        'template' => '{summary}{pager}{items}{pager}',
+        'template' => '{items}{pager}',
         'pager' => array(
             'class' => 'TbPager',
             'displayFirstAndLast' => true,
@@ -49,6 +48,11 @@ $this->widget('TbGridView',
                 'filter' => $model->getEnumFieldLabels('ecnt_operation'),
                 ),
             array(
+                'name' => 'ecnt_move_code',
+                'value' => '$data->getEnumColumnLabel("ecnt_move_code")',
+                'filter' => $model->getEnumFieldLabels('ecnt_move_code'),
+            ),            
+            array(
                 //varchar(50)
                 'name' => 'ecnt_transport_id',
             ),
@@ -57,10 +61,10 @@ $this->widget('TbGridView',
                     'name' => 'ecnt_length',
                    'filter' => $model->getEnumFieldLabels('ecnt_length'),
                 ),
-            array(
-                //varchar(50)
-                'name' => 'ecnt_iso_type',
-            ),
+//            array(
+//                //varchar(50)
+//                'name' => 'ecnt_iso_type',
+//            ),
             array(
                 //varchar(50)
                 'name' => 'ecnt_ib_carrier',
@@ -114,6 +118,9 @@ $this->widget('TbGridView',
                 'htmlOptions' => array(
                     'class' => 'numeric-column',
                 ),                
+            ),
+            array(
+                'name'=>'error',
             ),
             array(
                 'class' => 'editable.EditableColumn',

@@ -7,6 +7,8 @@ Yii::import('EcntContainer.*');
 class EcntContainer extends BaseEcntContainer
 {
 
+    public $error;
+    
     // Add your model-specific methods here. This file will not be overriden by gtc except you force it.
     public static function model($className = __CLASS__)
     {
@@ -47,6 +49,26 @@ class EcntContainer extends BaseEcntContainer
         if (is_null($criteria)) {
             $criteria = new CDbCriteria;
         }
+
+        return new CActiveDataProvider(get_class($this), array(
+            'criteria' => $this->searchCriteria($criteria),
+            'sort'=>array(
+                'defaultOrder'=>'ecnt_datetime',
+                ),
+
+            
+        ));
+    }
+    
+    public function searchAdmin($criteria = null)
+    {
+        if (is_null($criteria)) {
+            $criteria = new CDbCriteria;
+        }
+        
+        $criteria->select = "t.*,GROUP_CONCAT(concat(ecer_descr,' [',ecer_status,']') SEPARATOR '<br/>') error";
+        $criteria->join = "LEFT OUTER JOIN ecer_errors ON ecer_ecnt_id = ecnt_id";
+        $criteria->group = "ecnt_id";
         return new CActiveDataProvider(get_class($this), array(
             'criteria' => $this->searchCriteria($criteria),
             'sort'=>array(
@@ -103,6 +125,62 @@ class EcntContainer extends BaseEcntContainer
             if($ecpr_id){
                 $this->ecnt_ecpr_id = $ecpr_id;
             }
+            
+        }
+        
+        //calc movment code
+        if($this->ecnt_operation == EcntContainer::ECNT_OPERATION_VESSEL_DISCHARGE
+                && $this->ecnt_statuss == EcntContainer::ECNT_STATUSS_FULL){
+            $this->ecnt_move_code = EcntContainer::ECNT_MOVE_CODE_DF;
+        }elseif($this->ecnt_operation == EcntContainer::ECNT_OPERATION_TRUCK_OUT
+                && $this->ecnt_statuss == EcntContainer::ECNT_STATUSS_FULL){
+            $this->ecnt_move_code = EcntContainer::ECNT_MOVE_CODE_LD;
+        }elseif($this->ecnt_operation == EcntContainer::ECNT_OPERATION_TRUCK_IN
+                && $this->ecnt_statuss == EcntContainer::ECNT_STATUSS_EMPTY){
+            $this->ecnt_move_code = EcntContainer::ECNT_MOVE_CODE_TE;
+        }elseif($this->ecnt_operation == EcntContainer::ECNT_OPERATION_TRUCK_OUT
+                && $this->ecnt_statuss == EcntContainer::ECNT_STATUSS_EMPTY){
+            $this->ecnt_move_code = EcntContainer::ECNT_MOVE_CODE_LV;
+        }elseif($this->ecnt_operation == EcntContainer::ECNT_OPERATION_TRUCK_IN
+                && $this->ecnt_statuss == EcntContainer::ECNT_STATUSS_FULL){
+            $this->ecnt_move_code = EcntContainer::ECNT_MOVE_CODE_TF;
+        }elseif($this->ecnt_operation == EcntContainer::ECNT_OPERATION_VESSEL_LOAD
+                && $this->ecnt_statuss == EcntContainer::ECNT_STATUSS_FULL){
+            $this->ecnt_move_code = EcntContainer::ECNT_MOVE_CODE_VF;
+        }elseif($this->ecnt_operation == EcntContainer::ECNT_OPERATION_VESSEL_LOAD
+                && $this->ecnt_statuss == EcntContainer::ECNT_STATUSS_EMPTY){
+            $this->ecnt_move_code = EcntContainer::ECNT_MOVE_CODE_VE;
+        }elseif($this->ecnt_operation == EcntContainer::ECNT_OPERATION_VESSEL_DISCHARGE
+                && $this->ecnt_statuss == EcntContainer::ECNT_STATUSS_EMPTY){
+            $this->ecnt_move_code = EcntContainer::ECNT_MOVE_CODE_DE;
+        }else{
+            $this->ecnt_move_code = NULL;
+        }
+        
+        /**
+         * search prev moving and analyse move code sqn
+         */
+        $this->ecnt_error = null;
+        $this->ecnt_notes = '';
+        if(!empty($this->ecnt_move_code) 
+                && $this->ecnt_move_code != EcntContainer::ECNT_MOVE_CODE_DF){
+            $prev_ecnt = $this->searchPrevContainer();
+            if(!$prev_ecnt){
+                EcerErrors::registreError($this->ecnt_id, 'Can not found previos moving');
+            }else{
+                $sqn_rules = [
+                    'DF' => 'LD',
+                    'LD' => 'TE',
+                    'TE' => 'LV',
+                    'LV' => 'TF',
+                    'TF' => 'VF',
+                ];
+                if($sqn_rules[$prev_ecnt->ecnt_move_code] != $this->ecnt_move_code){
+                    $notes = 'Ilegal sequence: ' . $prev_ecnt->ecnt_move_code . '- ' . $this->ecnt_move_code;
+                    EcerErrors::registreError($this->ecnt_id, $notes);                    
+                }
+            }
+            
             
         }
         
@@ -238,6 +316,17 @@ class EcntContainer extends BaseEcntContainer
         return true;
         
         
+    }
+    
+    public function searchPrevContainer(){
+        
+        $criteria = new CDbCriteria;
+        //$criteria->compare('t.ecnt_container_nr', $this->ecnt_container_nr);        
+        $criteria->condition = "ecnt_datetime < '".$this->ecnt_datetime."' and t.ecnt_container_nr ='".$this->ecnt_container_nr."'";
+        $criteria->order = "ecnt_datetime DESC";
+        $criteria->limit = 1;
+        
+        return EcntContainer::model()->find($criteria);
     }
     
 }

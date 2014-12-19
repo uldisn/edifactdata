@@ -32,7 +32,7 @@ $cancel_buton = $this->widget("bootstrap.widgets.TbButton", array(
 
 
 <div class="row">
-    <div class="span6">
+    <div class="span3">
         <h3 class="header blue lighter smaller">
             Data
         </h3>         
@@ -42,11 +42,30 @@ $cancel_buton = $this->widget("bootstrap.widgets.TbButton", array(
             'data' => $model,
             'attributes' => array(
                 array(
+                    'name' => 'ecnt_edifact_id',
+                ),
+                array(
                     'name' => 'ecnt_terminal',
                 ),
                 array(
                     'name' => 'ecnt_message_type',
                 ),
+                array(
+                    'name' => 'ecnt_move_code',
+                    'type' => 'raw',
+                    'value' => $this->widget(
+                        'EditableField',
+                        array(
+                            'model' => $model,
+                            'type' => 'select',
+                            'url' => $this->createUrl('/edifactdata/ecntContainer/editableSaver'),
+                            'source' => $model->getEnumFieldLabels('ecnt_move_code'),
+                            'attribute' => 'ecnt_move_code',
+                            'placement' => 'right',
+                        ),
+                        true
+                    )
+                ),                
                 array(
                     'name' => 'ecnt_container_nr',
                 ),
@@ -119,7 +138,9 @@ $cancel_buton = $this->widget("bootstrap.widgets.TbButton", array(
         ));
         ?>
     </div>
-    <div class="span6">
+    <div class="span9">
+        
+        <?php $this->renderPartial('_view-relations_grids',array('modelMain' => $model, 'ajax' => false,)); ?>          
         <h3 class="header blue lighter smaller">
             <i class="icon-list-alt smaller-90"></i>
             EDI File
