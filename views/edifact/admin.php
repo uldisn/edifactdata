@@ -5,36 +5,23 @@ $this->setPageTitle(Yii::t('EdifactDataModule.model', 'Edifacts'));
 <div class="clearfix">
     <div class="btn-toolbar pull-left">
         <div class="btn-group">
-        <?php 
-        $this->widget('bootstrap.widgets.TbButton', array(
-             'label'=>Yii::t('EdifactDataModule.crud','Create'),
-             'icon'=>'icon-plus',
-             'size'=>'large',
-             'type'=>'success',
-             'url'=>array('create'),
-             'visible'=>(Yii::app()->user->checkAccess('Edifactdata.Edifact.*') || Yii::app()->user->checkAccess('Edifactdata.Edifact.Create'))
-        ));  
-        ?>
-</div>
-        <div class="btn-group">
             <h1>
-                <i class=""></i>
+                <i class="icon-paperclip"></i>
                 <?php echo Yii::t('EdifactDataModule.model', 'Edifacts');?>            </h1>
         </div>
     </div>
 </div>
 
-<?php Yii::beginProfile('Edifact.view.grid'); ?>
+<?php 
 
-
-<?php
+Yii::beginProfile('Edifact.view.grid'); 
 $this->widget('TbGridView',
     array(
         'id' => 'edifact-grid',
         'dataProvider' => $model->search(),
         'filter' => $model,
         #'responsiveTable' => true,
-        'template' => '{summary}{pager}{items}{pager}',
+        'template' => '{items}{pager}',
         'pager' => array(
             'class' => 'TbPager',
             'displayFirstAndLast' => true,

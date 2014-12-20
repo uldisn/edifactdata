@@ -22,8 +22,9 @@ $cancel_buton = $this->widget("bootstrap.widgets.TbButton", array(
         <div class="btn-group"><?php echo $cancel_buton;?></div>
         <div class="btn-group">
             <h1>
-                <i class=""></i>
-                <?php echo Yii::t('EdifactDataModule.model','Create Etpr Terminal Prices');?>            </h1>
+                <i class="icon-money"></i>
+                <?php echo Yii::t('EdifactDataModule.model','Create Terminal Prices record');?>            
+            </h1>
         </div>
     </div>
 </div>

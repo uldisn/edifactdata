@@ -20,7 +20,7 @@ $cancel_buton = $this->widget("bootstrap.widgets.TbButton", array(
         <div class="btn-group"><?php echo $cancel_buton;?></div>
         <div class="btn-group">
             <h1>
-                <i class=""></i>
+                <i class="icon-th-large"></i>
                 <?php echo Yii::t('EdifactDataModule.model','Container');?>                
                 <small><?php echo$model->itemLabel?></small>
             </h1>

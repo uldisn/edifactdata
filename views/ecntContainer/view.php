@@ -1,8 +1,5 @@
 <?php
-$this->setPageTitle(Yii::t('EdifactDataModule.model', 'Container')
-        . ': '
-        . $model->ecnt_container_nr
-);
+$this->setPageTitle(Yii::t('EdifactDataModule.model', 'Container moving'));
 $cancel_buton = $this->widget("bootstrap.widgets.TbButton", array(
     "icon" => "chevron-left",
     "size" => "large",
@@ -21,7 +18,7 @@ $cancel_buton = $this->widget("bootstrap.widgets.TbButton", array(
         <div class="btn-group"><?php echo $cancel_buton; ?></div>
         <div class="btn-group">
             <h1>
-                <i class=""></i>
+                <i class="icon-exchange"></i>
                 <?php echo Yii::t('EdifactDataModule.model', 'Container'); ?>                
                 <small><?php echo$model->ecnt_container_nr ?></small>
             </h1>
@@ -33,9 +30,6 @@ $cancel_buton = $this->widget("bootstrap.widgets.TbButton", array(
 
 <div class="row">
     <div class="span3">
-        <h3 class="header blue lighter smaller">
-            Data
-        </h3>         
         <?php
         $this->widget(
                 'TbAceDetailView', array(
@@ -52,19 +46,6 @@ $cancel_buton = $this->widget("bootstrap.widgets.TbButton", array(
                 ),
                 array(
                     'name' => 'ecnt_move_code',
-                    'type' => 'raw',
-                    'value' => $this->widget(
-                        'EditableField',
-                        array(
-                            'model' => $model,
-                            'type' => 'select',
-                            'url' => $this->createUrl('/edifactdata/ecntContainer/editableSaver'),
-                            'source' => $model->getEnumFieldLabels('ecnt_move_code'),
-                            'attribute' => 'ecnt_move_code',
-                            'placement' => 'right',
-                        ),
-                        true
-                    )
                 ),                
                 array(
                     'name' => 'ecnt_container_nr',

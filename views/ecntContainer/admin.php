@@ -1,5 +1,5 @@
 <?php
-$this->setPageTitle(Yii::t('EdifactDataModule.model', 'Containers'));
+$this->setPageTitle(Yii::t('EdifactDataModule.model', 'Containers Moving'));
 
 ?>
 
@@ -7,16 +7,16 @@ $this->setPageTitle(Yii::t('EdifactDataModule.model', 'Containers'));
     <div class="btn-toolbar pull-left">
         <div class="btn-group">
             <h1>
-                <i class=""></i>
-                <?php echo Yii::t('EdifactDataModule.model', 'Ecnt Containers');?>            </h1>
+                <i class="icon-exchange"></i>
+                <?php echo Yii::t('EdifactDataModule.model', 'Containers Moving');?>            
+            </h1>
         </div>
     </div>
 </div>
 
-<?php Yii::beginProfile('EcntContainer.view.grid'); ?>
+<?php 
 
-
-<?php
+Yii::beginProfile('EcntContainer.view.grid');
 $this->widget('TbGridView',
     array(
         'id' => 'ecnt-container-grid',
@@ -147,5 +147,5 @@ $this->widget('TbGridView',
         )
     )
 );
-?>
-<?php Yii::endProfile('EcntContainer.view.grid'); ?>
+
+Yii::endProfile('EcntContainer.view.grid');

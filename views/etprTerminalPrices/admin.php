@@ -1,5 +1,5 @@
 <?php
-$this->setPageTitle(Yii::t('EdifactDataModule.model', 'Etpr Terminal Prices'));
+$this->setPageTitle(Yii::t('EdifactDataModule.model', 'Terminal Prices'));
 ?>
 
 <div class="clearfix">
@@ -18,16 +18,15 @@ $this->setPageTitle(Yii::t('EdifactDataModule.model', 'Etpr Terminal Prices'));
 </div>
         <div class="btn-group">
             <h1>
-                <i class=""></i>
-                <?php echo Yii::t('EdifactDataModule.model', 'Etpr Terminal Prices');?>            </h1>
+                <i class="icon-money"></i>
+                <?php echo Yii::t('EdifactDataModule.model', 'Terminal Prices');?>            
+            </h1>
         </div>
     </div>
 </div>
 
-<?php Yii::beginProfile('EtprTerminalPrices.view.grid'); ?>
-
-
-<?php
+<?php 
+Yii::beginProfile('EtprTerminalPrices.view.grid'); 
 $this->widget('TbGridView',
     array(
         'id' => 'etpr-terminal-prices-grid',

@@ -24,8 +24,9 @@ $this->setPageTitle(
 </div>
         <div class="btn-group">
             <h1>
-                <i class=""></i>
-                <?php echo Yii::t('EdifactDataModule.model', 'Edifact Datas');?>            </h1>
+                <i class="icon-th-large"></i>
+                <?php echo Yii::t('EdifactDataModule.model', 'Edifact Datas');?>            
+            </h1>
         </div>
     </div>
 </div>

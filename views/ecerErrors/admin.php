@@ -1,6 +1,5 @@
 <?php
 $this->setPageTitle(Yii::t('EdifactDataModule.model', 'Alerts'));
-
 ?>
 <div class="clearfix">
     <div class="btn-toolbar pull-left">
@@ -12,10 +11,8 @@ $this->setPageTitle(Yii::t('EdifactDataModule.model', 'Alerts'));
     </div>
 </div>
 
-<?php Yii::beginProfile('EcerErrors.view.grid'); ?>
-
-
-<?php
+<?php 
+Yii::beginProfile('EcerErrors.view.grid'); 
 $this->widget('TbGridView',
     array(
         'id' => 'ecer-errors-grid',
@@ -34,16 +31,6 @@ $this->widget('TbGridView',
                 array('name'=>'ecnt_operation'),
                 array('name'=>'ecnt_transport_id'),
                 array('name'=>'ecnt_length'),
-            array(
-                'class' => 'editable.EditableColumn',
-                'name' => 'ecer_ecnt_id',
-                'editable' => array(
-                    'type' => 'select',
-                    'url' => $this->createUrl('/edifactdata/ecerErrors/editableSaver'),
-                    'source' => CHtml::listData(EcntContainer::model()->findAll(array('limit' => 1000)), 'ecnt_id', 'itemLabel'),
-                    //'placement' => 'right',
-                )
-            ),
             array(
                 'class' => 'editable.EditableColumn',
                 'name' => 'ecer_descr',
@@ -77,7 +64,7 @@ $this->widget('TbGridView',
             array(
                 'class' => 'TbButtonColumn',
                 'buttons' => array(
-                    'view' => array('visible' => 'Yii::app()->user->checkAccess("Edifactdata.EcerErrors.View")'),
+                    'view' => array('visible' => 'TRUE'),
                     'update' => array('visible' => 'FALSE'),
                     'delete' => array('visible' => 'FALSE'),
                 ),

@@ -31,6 +31,11 @@ class EcerErrors extends BaseEcerErrors
         return parent::getItemLabel();
     }
 
+    public function attributeLabels()
+    {
+        return array_merge(parent::attributeLabels(),  EcntContainer::model()->attributeLabels());
+    }
+    
     public function behaviors()
     {
         return array_merge(

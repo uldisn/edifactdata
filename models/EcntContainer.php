@@ -79,6 +79,54 @@ class EcntContainer extends BaseEcntContainer
         ));
     }
 
+    public function searchEmpty($criteria = null)
+    {
+        if (is_null($criteria)) {
+            $criteria = new CDbCriteria;
+        }
+        
+        //$criteria->select = "t.*,GROUP_CONCAT(concat(ecer_descr,' [',ecer_status,']') SEPARATOR '<br/>') error";
+        $criteria->join = "  
+            LEFT OUTER JOIN ecnt_container ec2 
+                ON t.ecnt_container_nr = ec2.ecnt_container_nr 
+                    AND t.ecnt_datetime < ec2.ecnt_datetime ";
+        $criteria->compare('t.ecnt_move_code',  array(EcntContainer::ECNT_MOVE_CODE_DE,EcntContainer::ECNT_MOVE_CODE_TE)); 
+        $criteria->addCondition('ec2.ecnt_id IS NULL '); 
+        
+        return new CActiveDataProvider(get_class($this), array(
+            'criteria' => $this->searchCriteria($criteria),
+            'sort'=>array(
+                'defaultOrder'=>'ecnt_datetime',
+                ),
+
+            
+        ));
+    }
+
+    public function searchOnTheWay($criteria = null)
+    {
+        if (is_null($criteria)) {
+            $criteria = new CDbCriteria;
+        }
+        
+        //$criteria->select = "t.*,GROUP_CONCAT(concat(ecer_descr,' [',ecer_status,']') SEPARATOR '<br/>') error";
+        $criteria->join = "  
+            LEFT OUTER JOIN ecnt_container ec2 
+                ON t.ecnt_container_nr = ec2.ecnt_container_nr 
+                    AND t.ecnt_datetime < ec2.ecnt_datetime ";
+        $criteria->compare('t.ecnt_move_code',  array(EcntContainer::ECNT_MOVE_CODE_LV,EcntContainer::ECNT_MOVE_CODE_LD)); 
+        $criteria->addCondition('ec2.ecnt_id IS NULL '); 
+        
+        return new CActiveDataProvider(get_class($this), array(
+            'criteria' => $this->searchCriteria($criteria),
+            'sort'=>array(
+                'defaultOrder'=>'ecnt_datetime',
+                ),
+
+            
+        ));
+    }
+
     public function beforeSave()
     {
         

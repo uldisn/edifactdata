@@ -7,24 +7,22 @@ $this->setPageTitle(Yii::t('EdifactDataModule.model', 'Containers'));
     <div class="btn-toolbar pull-left">
         <div class="btn-group">
             <h1>
-                <i class=""></i>
+                <i class="icon-th-large"></i>
                 <?php echo Yii::t('EdifactDataModule.model', 'Containers');?>  
             </h1>
         </div>
     </div>
 </div>
 
-<?php Yii::beginProfile('EcprContainerProcesing.view.grid'); ?>
-
-
-<?php
+<?php 
+Yii::beginProfile('EcprContainerProcesing.view.grid'); 
 $this->widget('TbGridView',
     array(
         'id' => 'ecpr-container-procesing-grid',
         'dataProvider' => $model->searchExt(),
         'filter' => $model,
         #'responsiveTable' => true,
-        'template' => '{summary}{pager}{items}{pager}',
+        'template' => '{items}{pager}',
         'pager' => array(
             'class' => 'TbPager',
             'displayFirstAndLast' => true,
