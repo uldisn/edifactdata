@@ -223,7 +223,8 @@ class EcntContainer extends BaseEcntContainer
                     'LV' => 'TF',
                     'TF' => 'VF',
                 ];
-                if($sqn_rules[$prev_ecnt->ecnt_move_code] != $this->ecnt_move_code){
+                if(isset($sqn_rules[$prev_ecnt->ecnt_move_code]) 
+                        && $sqn_rules[$prev_ecnt->ecnt_move_code] != $this->ecnt_move_code){
                     $notes = 'Ilegal sequence: ' . $prev_ecnt->ecnt_move_code . '- ' . $this->ecnt_move_code;
                     EcerErrors::registreError($this->ecnt_id, $notes);                    
                 }
