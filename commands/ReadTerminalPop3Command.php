@@ -402,49 +402,77 @@ EOD;
 
             }elseif($MessageType == 'CODECO'){
           
-                $ecnt_data = array();
-                $ecnt_data['ecnt_terminal'] = $terminal;
-                $ecnt_data['ecnt_container_nr'] = $EdiReader->readEdiDataValue('EQD', 2);        
-                $ecnt_data['ecnt_iso_type'] = $EdiReader->readEdiDataValue('EQD', 3,0);
-                $ecnt_data['ecnt_message_type'] = $MessageType;   
-                
-                
-                //2005 Date/time/period qualifier: code
-                // 7 - efective datetime
-                $ecnt_data['ecnt_datetime'] = $EdiReader->readEdiSegmentDTM(7);                
+                //get count of containers
+                $container_count = $EdiReader->readEdiDataValue('CNT', 1,1);
 
-                //LOC Place of loading
-                // 9 - [3334] Seaport, airport, freight terminal, 
-                //              rail station or other place at which the goods (cargo) 
-                //              are loaded on to the means of transport being used for their carriage.
-                //    TRUCK IN          
-                //11 - Place of discharge
-                //      [3392] Seaport, airport, freight terminal, rail station or other 
-                //      place at which goods are unloaded from the means of transport 
-                //      having been used for their carriage.
-                // TRUCK OUT                       
-                $LocationFunctionPlaceLoading =  $EdiReader->readEdiDataValue(['LOC',[1=>9]],2);
-                $LocationFunctionPlaceDischarge =  $EdiReader->readEdiDataValue(['LOC',[1=>11]],2);
-                if(!empty($LocationFunctionPlaceLoading)){
-                    $ecnt_data['ecnt_operation'] = EcntContainer::ECNT_OPERATION_TRUCK_IN;   
-                }elseif(!empty($LocationFunctionPlaceDischarge)){
-                    $ecnt_data['ecnt_operation'] = EcntContainer::ECNT_OPERATION_TRUCK_OUT;   
+                //get container group detais
+                if($container_count == 1){
+                    $containers = [$EdiReader->getParsedFile()];
                 }else{
-                    $error[] = 'Neatrada operation - truck in/out';
+                    $containers = $EdiReader->readGroups('NAD', 'EQD', 'TDT', 'CNT');  
                 }
+                                
+                if($container_count != count($containers)){
+                    $error[] = 'Mismatch contaier count. CNT='.$container_count.' groups='.count($containers);
+                    EcntContainer::saveEdiData(array(),$EdiReader,$error,$edifact);
+                    return false;
+                }
+                
+                //LOC Place of loading
+                 // 9 - [3334] Seaport, airport, freight terminal, 
+                 //              rail station or other place at which the goods (cargo) 
+                 //              are loaded on to the means of transport being used for their carriage.
+                 //    TRUCK IN          
+                 //11 - Place of discharge
+                 //      [3392] Seaport, airport, freight terminal, rail station or other 
+                 //      place at which goods are unloaded from the means of transport 
+                 //      having been used for their carriage.
+                 // TRUCK OUT                       
+                 $LocationFunctionPlaceLoading =  $EdiReader->readEdiDataValue(['LOC',[1=>9]],2);
+                 $LocationFunctionPlaceDischarge =  $EdiReader->readEdiDataValue(['LOC',[1=>11]],2);
+                 if(!empty($LocationFunctionPlaceLoading)){
+                     $ecnt_operation = EcntContainer::ECNT_OPERATION_TRUCK_IN;   
+                 }elseif(!empty($LocationFunctionPlaceDischarge)){
+                     $ecnt_operation = EcntContainer::ECNT_OPERATION_TRUCK_OUT;   
+                 }else{
+                     $error[] = 'Neatrada operation - truck in/out';
+                 }                
 
                 //PARTY QUALIFIER 
                 //CF Container operator/lessee
                 // Party to whom the possession of specified property (e.g. container) has been conveyed for a period of time in return for rental payments.
-                $ecnt_data['ecnt_fwd'] = $EdiReader->readEdiDataValue(['NAD', ['1' => 'CF']], 2);
+                $ecnt_fwd = $EdiReader->readEdiDataValue(['NAD', ['1' => 'CF']], 2);                 
+                 
+                //process all containers
+                foreach($containers as $container){
+                    $error = [];
+                    $EdiReader->resetErrors();
+                    
+                    $ConEdiReader = new ContainerReader();
+                    $ConEdiReader->setParsedFile($container);
+                    
+                    $ecnt_data = [];                    
+                    $ecnt_data['ecnt_terminal'] = $terminal;
+                    $ecnt_data['ecnt_container_nr'] = $ConEdiReader->readEdiDataValue('EQD', 2);        
+                    $ecnt_data['ecnt_iso_type'] = $ConEdiReader->readEdiDataValue('EQD', 3,0);
+                    $ecnt_data['ecnt_message_type'] = $MessageType;   
+                    $ecnt_data['ecnt_operation'] = $ecnt_operation;   
+                    $ecnt_data['ecnt_fwd'] = $ecnt_fwd;
+                    
+                    //2005 Date/time/period qualifier: code
+                    // 7 - efective datetime
+                    $ecnt_data['ecnt_datetime'] = $ConEdiReader->readEdiSegmentDTM(7);   
+
+                    $ecnt_data['ecnt_transport_id'] = $ConEdiReader->readTDTtransportIdentification(1);
+                    if(!empty($ecnt_data['ecnt_transport_id'])){
+                        $ecnt_data['ecnt_ib_carrier'] = 'TRUCK';
+                    }       
+                    $ecnt_data['ecnt_statuss'] = $ConEdiReader->readFullEmpty();                       
                 
-                $ecnt_data['ecnt_transport_id'] = $EdiReader->readTDTtransportIdentification(1);
-                if(!empty($ecnt_data['ecnt_transport_id'])){
-                    $ecnt_data['ecnt_ib_carrier'] = 'TRUCK';
-                }       
-                $ecnt_data['ecnt_statuss'] = $EdiReader->readFullEmpty();     
+                    EcntContainer::saveEdiData($ecnt_data,$EdiReader,$error,$edifact); 
+                    
+                }                
                 
-                EcntContainer::saveEdiData($ecnt_data,$EdiReader,$error,$edifact); 
                 return;
             }else{
                 $error[] = 'Unknown message type:' . $MessageType;

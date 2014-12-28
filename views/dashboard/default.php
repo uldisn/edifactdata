@@ -11,6 +11,78 @@ $this->setPageTitle(Yii::t('EdifactDataModule.model', 'Dashboard'));
     </div>
 </div>
 <?php
+Yii::beginProfile('edifact.view.grid');
+
+$grid_error = '';
+$grid_warning = '';
+?>
+
+<div class="table-header">
+    <i class="icon-warning-sign"></i>
+<?= Yii::t('EdifactDataModule.model', 'EDI files reading errors') ?>
+</div>
+
+<?php
+if (!empty($grid_error)) {
+    ?>
+    <div class="alert alert-error"><?php echo $grid_error ?></div>
+    <?php
+}
+
+if (!empty($grid_warning)) {
+    ?>
+    <div class="alert alert-warning"><?php echo $grid_warning ?></div>
+    <?php
+}
+//if (!empty($modelMain->ecerErrors)) {
+// render grid view
+$model = Edifact::model();
+$model->status = Edifact::STATUS_ERROR;
+$this->widget('TbGridView', array(
+    'id' => 'ecer-errors-grid',
+    'dataProvider' => $model->search(),
+    'template' => '{summary}{items}{pager}',
+    'summaryText' => '&nbsp;',
+    'htmlOptions' => array(
+        'class' => 'rel-grid-view'
+    ),
+    'columns' => array(
+            array(
+                //char(10)
+                'name' => 'terminal',
+            ),
+            array(
+                'name' => 'bgm_1_id',
+            ),
+            array(
+                'name' => 'prep_datetime',
+            ),
+            array(
+                'name' => 'message_ref_number',
+            ),
+            array(
+                'name' => 'filename',
+            ),
+            array(
+                'name' => 'create_datetime',
+            ),
+        array(
+            'class' => 'TbButtonColumn',
+            'buttons' => array(
+                'view' => array('visible' => 'TRUE'),
+                'update' => array('visible' => 'FALSE'),
+                'delete' => array('visible' => 'FALSE'),
+            ),
+            'viewButtonUrl' => 'Yii::app()->controller->createUrl("edifact/view", array("id" => $data->id))',
+            'viewButtonOptions' => array('data-toggle' => 'tooltip'),
+        ),
+    )
+        )
+);
+
+
+Yii::endProfile('edifact.view.grid');
+
 Yii::beginProfile('ecer_ecnt_id.view.grid');
 
 $grid_error = '';
