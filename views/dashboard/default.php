@@ -147,7 +147,7 @@ $this->widget('TbGridView', array(
         array('name' => 'ecnt_datetime'),
         array('name' => 'ecnt_operation'),
         array('name' => 'ecnt_transport_id'),
-        array('name' => 'ecnt_length'),
+        array('name' => 'ecnt_iso_type'),
         array(
             'class' => 'TbButtonColumn',
             'buttons' => array(
@@ -227,7 +227,7 @@ $this->widget('TbGridView', array(
         array('name' => 'ecnt_datetime'),
         array('name' => 'ecnt_operation'),
         array('name' => 'ecnt_transport_id'),
-        array('name' => 'ecnt_length'),
+        array('name' => 'ecnt_iso_type'),
         array(
             'class' => 'TbButtonColumn',
             'buttons' => array(
@@ -295,8 +295,7 @@ $this->widget('TbGridView', array(
                 'value' => '$data->getEnumColumnLabel("ecnt_move_code")',
             ),            
             array(
-                    'name' => 'ecnt_length',
-                   'filter' => $model->getEnumFieldLabels('ecnt_length'),
+                    'name' => 'ecnt_iso_type',
                 ),
             array(
                 'class' => 'editable.EditableColumn',
@@ -378,8 +377,7 @@ $this->widget('TbGridView', array(
                 'value' => '$data->getEnumColumnLabel("ecnt_move_code")',
             ),            
             array(
-                    'name' => 'ecnt_length',
-                   'filter' => $model->getEnumFieldLabels('ecnt_length'),
+                'name' => 'ecnt_iso_type',
                 ),
             array(
                 'class' => 'editable.EditableColumn',

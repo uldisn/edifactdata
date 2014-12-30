@@ -6,6 +6,18 @@ $this->setPageTitle(Yii::t('EdifactDataModule.model', 'Containers Moving'));
 <div class="clearfix">
     <div class="btn-toolbar pull-left">
         <div class="btn-group">
+        <?php 
+        $this->widget('bootstrap.widgets.TbButton', array(
+             'label'=>Yii::t('EdifactDataModule.crud','Create'),
+             'icon'=>'icon-plus',
+             'size'=>'large',
+             'type'=>'success',
+             'url'=>array('create'),
+             'visible'=>(Yii::app()->user->checkAccess('Edifactdata.EcntContainer.*') || Yii::app()->user->checkAccess('Edifactdata.EcntContainer.Create'))
+        ));  
+        ?>
+        </div>         
+        <div class="btn-group">
             <h1>
                 <i class="icon-exchange"></i>
                 <?php echo Yii::t('EdifactDataModule.model', 'Containers Moving');?>            
@@ -33,10 +45,6 @@ $this->widget('TbGridView',
                 'name' => 'ecnt_terminal',
             ),
             array(
-                //varchar(10)
-                'name' => 'ecnt_message_type',
-            ),
-            array(
                 //varchar(50)
                 'name' => 'ecnt_container_nr',
             ),
@@ -58,13 +66,8 @@ $this->widget('TbGridView',
             ),
 
             array(
-                    'name' => 'ecnt_length',
-                   'filter' => $model->getEnumFieldLabels('ecnt_length'),
+                    'name' => 'ecnt_iso_type',
                 ),
-//            array(
-//                //varchar(50)
-//                'name' => 'ecnt_iso_type',
-//            ),
             array(
                 //varchar(50)
                 'name' => 'ecnt_ib_carrier',

@@ -377,5 +377,19 @@ class EcntContainer extends BaseEcntContainer
         
         return EcntContainer::model()->find($criteria);
     }
+
+    /**
+     * daily movment report for Cyprus
+     * @param date $date
+     * @return array 
+     */
+    public static function reportCyprus($date){
+        
+        $criteria = new CDbCriteria;
+        $criteria->addCondition("ecnt_datetime >= :date");
+        $criteria->addCondition("ecnt_datetime <= adddate(:date,1)");
+        $criteria->params = array(':date' => $date);
+        return self::model()->findAll($criteria);
+    }
     
 }

@@ -19,7 +19,7 @@ $cancel_buton = $this->widget("bootstrap.widgets.TbButton", array(
         <div class="btn-group">
             <h1>
                 <i class="icon-exchange"></i>
-                <?php echo Yii::t('EdifactDataModule.model', 'Container'); ?>                
+                <?php echo Yii::t('EdifactDataModule.model', 'Container moving'); ?>                
                 <small><?php echo$model->ecnt_container_nr ?></small>
             </h1>
         </div>
@@ -46,7 +46,7 @@ $cancel_buton = $this->widget("bootstrap.widgets.TbButton", array(
                 ),
                 array(
                     'name' => 'ecnt_move_code',
-                ),                
+                ),
                 array(
                     'name' => 'ecnt_container_nr',
                 ),
@@ -120,56 +120,66 @@ $cancel_buton = $this->widget("bootstrap.widgets.TbButton", array(
         ?>
     </div>
     <div class="span9">
-        
-        <?php $this->renderPartial('_view-relations_grids',array('modelMain' => $model, 'ajax' => false,)); ?>          
+
+        <?php
+        $this->renderPartial('_view-relations_grids', array('modelMain' => $model, 'ajax' => false,));
+        if (!empty($model->ecnt_edifact_id)) {
+            ?>          
+            <h3 class="header blue lighter smaller">
+                <i class="icon-list-alt smaller-90"></i>
+                EDI File
+            </h3>        
+            <?php
+            $this->widget(
+                    'TbAceDetailView', array(
+                'data' => $model,
+                'attributes' => array(
+                    array(
+                        'label' => 'FileName',
+                        'value' => $model->ecntEdifact->filename,
+                    ),
+                    array(
+                        'label' => 'Data',
+                        'type' => 'raw',
+                        'value' => str_replace(PHP_EOL, '<BR>', $model->ecntEdifact->message),
+                    ),
+                ),
+            ));
+        }
+        ?>
+    </div>
+
+</div>
+<?php
+if (!empty($model->ecnt_edifact_id)) {
+    ?>
+    <div class="space-12"></div>
+    <div class="row">
+
         <h3 class="header blue lighter smaller">
-            <i class="icon-list-alt smaller-90"></i>
-            EDI File
+            EDI File Readable
         </h3>        
-<?php
-$this->widget(
-        'TbAceDetailView', array(
-    'data' => $model,
-    'attributes' => array(
-        array(
-            'label' => 'FileName',
-            'value' => $model->ecntEdifact->filename,
-        ),
-        array(
-            'label' => 'Data',
-            'type' => 'raw',
-            'value' => str_replace(PHP_EOL, '<BR>', $model->ecntEdifact->message),
-        ),
-    ),
-));
+        <div class="span12">
+            <pre>
+                <?php
+                $edifact = Edifact::model()->FindByPk($model->ecntEdifact->id);
+
+                $EdiParser = new EDI\Parser();
+                $f = explode(PHP_EOL, $edifact->message);
+                $parsed = $EdiParser->parse($f);
+
+                $analyser = new EDI\Analyser();
+                $analyser->edi_message = $edifact->message;
+                $mapping_segments = realpath(Yii::getPathOfAlias('edifact-parser')) . '/Mapping/d95b/segments.xml';
+                $analyser->loadSegmentsXml($mapping_segments);
+                echo $analyser->process($parsed);
+                ?>    
+            </pre>
+        </div>
+    </div>
+    <?php
+}
 ?>
-    </div>
-
-</div>
-<div class="space-12"></div>
-<div class="row">
-
-    <h3 class="header blue lighter smaller">
-        EDI File Readable
-    </h3>        
-    <div class="span12">
-        <pre>
-<?php
-$edifact = Edifact::model()->FindByPk($model->ecntEdifact->id);
-
-$EdiParser = new EDI\Parser();
-$f = explode(PHP_EOL, $edifact->message);
-$parsed = $EdiParser->parse($f);
-
-$analyser = new EDI\Analyser();
-$analyser->edi_message = $edifact->message;
-$mapping_segments = realpath(Yii::getPathOfAlias('edifact-parser')) . '/Mapping/d95b/segments.xml';
-$analyser->loadSegmentsXml($mapping_segments);
-echo $analyser->process($parsed);
-?>    
-        </pre>
-    </div>
-</div>
 <div class="space-12"></div>
 
 

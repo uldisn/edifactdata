@@ -14,6 +14,7 @@ class EcerErrors extends BaseEcerErrors
     public $ecnt_operation;
     public $ecnt_transport_id;
     public $ecnt_length;
+    public $ecnt_iso_type;
     
     // Add your model-specific methods here. This file will not be overriden by gtc except you force it.
     public static function model($className = __CLASS__)
@@ -61,10 +62,17 @@ class EcerErrors extends BaseEcerErrors
             $criteria = new CDbCriteria;
         }
         
-        $criteria->select = "t.*,
-            ec.ecnt_terminal,ec.ecnt_move_code,
-            ec.ecnt_container_nr,ec.ecnt_datetime,
-            ec.ecnt_operation,ec.ecnt_transport_id,ec.ecnt_length";
+        $criteria->select = "
+            t.*,
+            ec.ecnt_terminal,
+            ec.ecnt_move_code,
+            ec.ecnt_container_nr,
+            ec.ecnt_datetime,
+            ec.ecnt_operation,
+            ec.ecnt_transport_id,
+            ec.ecnt_length,
+            ec.ecnt_iso_type
+            ";
         $criteria->join = "INNER JOIN ecnt_container ec ON ecer_ecnt_id = ecnt_id";
 
         

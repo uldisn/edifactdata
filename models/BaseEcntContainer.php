@@ -83,8 +83,8 @@ abstract class BaseEcntContainer extends CActiveRecord
     {
         return array_merge(
             parent::rules(), array(
-                array('ecnt_edifact_id, ecnt_terminal', 'required'),
-                array('ecnt_ecpr_id, ecnt_message_type, ecnt_move_code, ecnt_container_nr, ecnt_datetime, ecnt_operation, ecnt_transport_id, ecnt_length, ecnt_iso_type, ecnt_ib_carrier, ecnt_ob_carrier, ecnt_weight, ecnt_statuss, ecnt_line, ecnt_fwd, ecnt_booking, ecnt_eu_status, ecnt_imo_code, ecnt_notes, ecnt_etpr_id, ecnt_action_amt, ecnt_time_amt, ecnt_action_calc_notes, ecnt_time_calc_notes, ecnt_error', 'default', 'setOnEmpty' => true, 'value' => null),
+                array('ecnt_terminal', 'required'),
+                array('ecnt_edifact_id, ecnt_ecpr_id, ecnt_message_type, ecnt_move_code, ecnt_container_nr, ecnt_datetime, ecnt_operation, ecnt_transport_id, ecnt_length, ecnt_iso_type, ecnt_ib_carrier, ecnt_ob_carrier, ecnt_weight, ecnt_statuss, ecnt_line, ecnt_fwd, ecnt_booking, ecnt_eu_status, ecnt_imo_code, ecnt_notes, ecnt_etpr_id, ecnt_action_amt, ecnt_time_amt, ecnt_action_calc_notes, ecnt_time_calc_notes, ecnt_error', 'default', 'setOnEmpty' => true, 'value' => null),
                 array('ecnt_weight, ecnt_etpr_id', 'numerical', 'integerOnly' => true),
                 array('ecnt_action_amt, ecnt_time_amt', 'type','type'=>'float'),
                 array('ecnt_edifact_id, ecnt_ecpr_id, ecnt_terminal, ecnt_message_type', 'length', 'max' => 10),
