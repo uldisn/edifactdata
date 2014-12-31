@@ -44,10 +44,9 @@ class EcprContainerProcesing extends BaseEcprContainerProcesing
     {
         return array_merge(
             parent::rules()
-        /* , array(
-          array('column1, column2', 'rule1'),
-          array('column3', 'rule2'),
-          ) */
+         , array(
+                array('ecnt_terminal, ecnt_container_nr, ecnt_datetime,ecnt_statuss,ecnt_length,action_amt,time_amt', 'safe', 'on' => 'search'),
+             ) 
         );
     }
 
@@ -90,9 +89,10 @@ class EcprContainerProcesing extends BaseEcprContainerProcesing
                             ,ec_main.ecnt_statuss
                             ,ec_main.ecnt_length                            
                         ';
-        $criteria->compare('ecnt_terminal',  $this->ecnt_terminal);
-        $criteria->compare('ecnt_container_nr',  $this->ecnt_container_nr,true);
-        $criteria->compare('ecnt_datetime',$this->ecnt_datetime,true);
+        $criteria->compare('ec_main.ecnt_terminal',  $this->ecnt_terminal);
+        $criteria->compare('ec_main.ecnt_container_nr',  $this->ecnt_container_nr,true);
+        $criteria->compare('ec_main.ecnt_datetime',$this->ecnt_datetime,true);
+        $criteria->compare('ec_main.ecnt_statuss',$this->ecnt_statuss);
 
         return new CActiveDataProvider(get_class($this), array(
             'criteria' => $this->searchCriteria($criteria),

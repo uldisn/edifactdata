@@ -8,6 +8,7 @@ class EcntContainer extends BaseEcntContainer
 {
 
     public $error;
+    public $ecnt_datetime_range;
     
     // Add your model-specific methods here. This file will not be overriden by gtc except you force it.
     public static function model($className = __CLASS__)
@@ -37,10 +38,10 @@ class EcntContainer extends BaseEcntContainer
     {
         return array_merge(
             parent::rules()
-        /* , array(
-          array('column1, column2', 'rule1'),
-          array('column3', 'rule2'),
-          ) */
+         , array(
+          array('ecnt_datetime_range', 'safe', 'on' => 'search'),
+
+          ) 
         );
     }
 
@@ -69,6 +70,12 @@ class EcntContainer extends BaseEcntContainer
         $criteria->select = "t.*,GROUP_CONCAT(concat(ecer_descr,' [',ecer_status,']') SEPARATOR '<br/>') error";
         $criteria->join = "LEFT OUTER JOIN ecer_errors ON ecer_ecnt_id = ecnt_id";
         $criteria->group = "ecnt_id";
+        
+        if(!empty($this->ecnt_datetime_range)){
+            $criteria->AddCondition("t.ecnt_datetime >= '".substr($this->ecnt_datetime_range,0,10)."'");
+            $criteria->AddCondition("t.ecnt_datetime <= '".substr($this->ecnt_datetime_range,-10)."'");
+        }        
+        
         return new CActiveDataProvider(get_class($this), array(
             'criteria' => $this->searchCriteria($criteria),
             'sort'=>array(
@@ -379,11 +386,11 @@ class EcntContainer extends BaseEcntContainer
     }
 
     /**
-     * daily movment report for Cyprus
+     * daily movment report  
      * @param date $date
      * @return array 
      */
-    public static function reportCyprus($date){
+    public static function reportDay($date){
         
         $criteria = new CDbCriteria;
         $criteria->addCondition("ecnt_datetime >= :date");

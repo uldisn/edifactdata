@@ -1,6 +1,6 @@
 <div class="page-header position-relative">
     <h1>
-        Report for Cyprus
+        Day Status
     </h1>
 </div>
 
@@ -92,7 +92,7 @@ if ($data) {
                         <tr>
                             <td><?php echo substr($row->ecnt_container_nr, 0, 4) ?></td>
                             <td><?php echo substr($row->ecnt_container_nr, 5) ?></td>
-                            <td>RIX</td>
+                            <td>LVRIX</td>
                             <td><?php echo $terminal_alt_codes[$row->ecnt_terminal] ?></td>                    
                             <td><?php echo $row->ecnt_move_code ?></td>                    
                             <td><?php echo $report_date . ' ' . $movment_times[$row->ecnt_move_code] ?></td>                    

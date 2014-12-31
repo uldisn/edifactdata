@@ -23,7 +23,7 @@ class ReportController extends Controller {
             array(
                 'allow',
                 'actions' => array(
-                    'Cyprus',
+                    'Day',
                 ),
                 'roles' => array('Gramatvedis', 'NodPrieksnieks',),
             ),
@@ -34,9 +34,9 @@ class ReportController extends Controller {
         );
     }
 
-    public function actionCyprus() {
+    public function actionDay() {
         
-        $this->menu_route = "edifactdata/Report/Cyprus";        
+        $this->menu_route = "edifactdata/Report/Day";        
 
         $report_date = Yii::app()->request->getPost('report_date');
         $excel = Yii::app()->request->getPost('excel');
@@ -45,18 +45,18 @@ class ReportController extends Controller {
             $report_date = date('Y.m.d');
         }
 
-        $data = EcntContainer::reportCyprus($report_date);        
+        $data = EcntContainer::reportDay($report_date);        
                 
         if(empty($excel)){
             $this->render(
-                    'cyprus', array(
+                    'day', array(
                         'report_date' => $report_date,
                         'data' => $data,
                             )
             );
         }else{
             $this->render(
-                    'cyprus_xls', array(
+                    'day_xls', array(
                         'report_date' => $report_date,
                         'data' => $data,
                             )

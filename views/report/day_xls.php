@@ -134,7 +134,7 @@ while ($row = array_shift($data)) {
     $objPHPExcel->setActiveSheetIndex(0)
             ->setCellValue('A' . $rn, substr($row->ecnt_container_nr, 0, 4))
             ->setCellValue('B' . $rn, substr($row->ecnt_container_nr, 5))
-            ->setCellValue('C' . $rn, 'RIX')
+            ->setCellValue('C' . $rn, 'LVRIX')
             ->setCellValue('D' . $rn, $terminal_alt_codes[$row->ecnt_terminal])
             ->setCellValue('E' . $rn, $row->ecnt_move_code)
             ->setCellValue('F' . $rn, $report_date . ' ' . $movment_times[$row->ecnt_move_code]);
@@ -142,7 +142,7 @@ while ($row = array_shift($data)) {
 
 
 //out to browser
-$file_name = 'cyprus_' . str_replace('.','',$report_date) . '.xls';
+$file_name = 'latvia_' . str_replace('.','',$report_date) . '.xls';
 
 header('Content-Type: application/vnd.ms-excel');
 header('Content-Disposition: attachment;filename="' . $file_name . '"');

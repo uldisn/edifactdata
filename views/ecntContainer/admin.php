@@ -39,6 +39,7 @@ $this->widget('TbGridView',
             'class' => 'TbPager',
             'displayFirstAndLast' => true,
         ),
+        'afterAjaxUpdate' => 'filter_EcntContainer_ecnt_datetime_init',
         'columns' => array(
             array(
                 //varchar(10)
@@ -50,6 +51,14 @@ $this->widget('TbGridView',
             ),
             array(
                 'name' => 'ecnt_datetime',
+                'filter' => $this->widget('vendor.dbrisinajumi.DbrLib.widgets.TbFilterDateRangePicker', 
+                             array(
+                                'model' => $model,
+                                'attribute' => 'ecnt_datetime_range',
+                                'options' => array(
+                                    'ranges' => array('today','yesterday','this_week','last_week','this_month','last_month','this_year'),
+                                ) 
+                            ), TRUE ),                
             ),
             array(
                 'name' => 'ecnt_operation',
