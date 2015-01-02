@@ -128,6 +128,8 @@ abstract class BaseEcntContainer extends CActiveRecord
                 'ecntEtpr' => array(self::BELONGS_TO, 'EtprTerminalPrices', 'ecnt_etpr_id'),
                 'ecprContainerProcesings' => array(self::HAS_MANY, 'EcprContainerProcesing', 'ecpr_start_ecnt_id'),
                 'ecprContainerProcesings1' => array(self::HAS_MANY, 'EcprContainerProcesing', 'ecpr_end_ecnt_id'),
+                'ccmcMoveCode' => array(self::BELONGS_TO, 'CcmcMoveCodes' , 'ecnt_move_code'),
+                'cctcTypeCode' => array(self::BELONGS_TO, 'CctcTypeCodes' , 'ecnt_iso_type')
             )
         );
     }
