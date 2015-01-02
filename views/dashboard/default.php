@@ -113,6 +113,7 @@ $this->widget('TbGridView', array(
     'id' => 'ecer-errors-grid',
     'dataProvider' => $model->search($criteria_ecer_error),
     'template' => '{summary}{items}{pager}',
+      'rowCssClassExpression' => '$data->ecerEcnt->ccmcMoveCode->ccmc_css_class',
     'summaryText' => '&nbsp;',
     'htmlOptions' => array(
         'class' => 'rel-grid-view'
@@ -296,6 +297,8 @@ $this->widget('TbGridView', array(
             ),            
             array(
                     'name' => 'ecnt_iso_type',
+                     'type' => 'raw',
+                     'value' => 'isset($data->cctcTypeCode->cctc_css_class) ? Chtml::tag("span" , array("class" => $data->cctcTypeCode->cctc_css_class ), $data->ecnt_iso_type) : $data->ecnt_iso_type'
                 ),
             array(
                 'class' => 'editable.EditableColumn',
