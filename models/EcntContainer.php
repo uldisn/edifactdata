@@ -79,7 +79,7 @@ class EcntContainer extends BaseEcntContainer
         return new CActiveDataProvider(get_class($this), array(
             'criteria' => $this->searchCriteria($criteria),
             'sort'=>array(
-                'defaultOrder'=>'ecnt_datetime',
+                'defaultOrder'=>'ecnt_datetime DESC',
                 ),
 
             
@@ -221,7 +221,7 @@ class EcntContainer extends BaseEcntContainer
                 && $this->ecnt_move_code != EcntContainer::ECNT_MOVE_CODE_DF){
             $prev_ecnt = $this->searchPrevContainer();
             if(!$prev_ecnt){
-                EcerErrors::registreError($this->ecnt_id, 'Can not found previos moving');
+                EcerErrors::registreError($this->ecnt_id, 'Can not finfd previous moving');
             }else{
                 $sqn_rules = [
                     'DF' => 'LD',
