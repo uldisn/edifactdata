@@ -1,6 +1,8 @@
 <?php
 $this->setPageTitle(Yii::t('EdifactDataModule.model', 'Containers Moving'));
 
+Yii::app()->clientScript->registerScript('tooltip','$("span").tooltip();');
+
 ?>
 
 <div class="clearfix">
@@ -34,6 +36,7 @@ $this->widget('TbGridView',
         'id' => 'ecnt-container-grid',
         'dataProvider' => $model->searchAdmin(),
         'filter' => $model,
+        'rowCssClassExpression' => '$data->ccmcMoveCode->ccmc_css_class',
         'template' => '{items}{pager}',
         'pager' => array(
             'class' => 'TbPager',
@@ -48,6 +51,9 @@ $this->widget('TbGridView',
             array(
                 //varchar(50)
                 'name' => 'ecnt_container_nr',
+                'type' => 'raw', 
+                'value' => 'Chtml::link($data->ecnt_container_nr , 
+                    Yii::app()->controller->createUrl("admin", array("EcntContainer[ecnt_container_nr]" => $data->ecnt_container_nr) ) )'
             ),
             array(
                 'name' => 'ecnt_datetime',
@@ -66,7 +72,8 @@ $this->widget('TbGridView',
                 ),
             array(
                 'name' => 'ecnt_move_code',
-                'value' => '$data->getEnumColumnLabel("ecnt_move_code")',
+                'type' => 'raw', 
+                'value' => 'Chtml::tag("span",array( "title" => $data->ccmcMoveCode->ccmc_long ),$data->getEnumColumnLabel("ecnt_move_code"))',
                 'filter' => $model->getEnumFieldLabels('ecnt_move_code'),
             ),            
             array(
@@ -76,7 +83,9 @@ $this->widget('TbGridView',
 
             array(
                     'name' => 'ecnt_iso_type',
-                ),
+                    'type' => 'raw',
+                    'value' => 'isset($data->cctcTypeCode->cctc_css_class) ? Chtml::tag("span" , array("class" => $data->cctcTypeCode->cctc_css_class ), $data->ecnt_iso_type) : $data->ecnt_iso_type'
+                 ),
             array(
                 //varchar(50)
                 'name' => 'ecnt_ib_carrier',
@@ -95,26 +104,26 @@ $this->widget('TbGridView',
                     'name' => 'ecnt_statuss',
                    'filter' => $model->getEnumFieldLabels('ecnt_statuss'),
                 ),
-            array(
+       //     array(
                 //varchar(50)
-                'name' => 'ecnt_line',
-            ),
-            array(
+       //         'name' => 'ecnt_line',
+       //     ),
+       //     array(
                 //varchar(50)
-                'name' => 'ecnt_fwd',
-            ),
+       //         'name' => 'ecnt_fwd',
+        //    ),
             array(
                 //varchar(50)
                 'name' => 'ecnt_booking',
             ),
-            array(
-                    'name' => 'ecnt_eu_status',
-                   'filter' => $model->getEnumFieldLabels('ecnt_eu_status'),
-                ),
-            array(
-                //varchar(50)
-                'name' => 'ecnt_imo_code',
-            ),
+      //      array(
+      //              'name' => 'ecnt_eu_status',
+      //             'filter' => $model->getEnumFieldLabels('ecnt_eu_status'),
+      //          ),
+      //      array(
+      //          //varchar(50)
+      //          'name' => 'ecnt_imo_code',
+      //      ),
             array(
                 'name' => 'ecnt_action_amt',
                 'type' => 'raw',
@@ -161,3 +170,6 @@ $this->widget('TbGridView',
 );
 
 Yii::endProfile('EcntContainer.view.grid');
+
+?>
+
