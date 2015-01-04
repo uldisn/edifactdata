@@ -26,7 +26,7 @@ EOD;
      *
      */
     public function run($args) {
-        
+        echo 'START '. date("Y-m-d H:i:s") . PHP_EOL; 
         include_once realpath(Yii::getPathOfAlias('edifact-parser')) . '/Parser.php';
         include_once realpath(Yii::getPathOfAlias('edifact-parser')) . '/Reader.php';
         include_once realpath(Yii::getPathOfAlias('edifact-parser')) . '/Analyser.php';
@@ -35,14 +35,16 @@ EOD;
             foreach (Yii::app()->params['terminal_pop3'] as $terminal => $pop3_settings) {
                 echo 'Read terminal: ' . $terminal . PHP_EOL;
                 $attacments = $this->readPop3Attachments($pop3_settings['host'], $pop3_settings['user'], $pop3_settings['password']);
+                echo 'Found  ' . count($attacments) . ' attachments' . PHP_EOL;                
                 if ($attacments) {
                     foreach ($attacments as $attachment){
-                        //echo 'file: ' . $attachment['filename'] . PHP_EOL;
+                        echo 'file: ' . $attachment['filename'] . PHP_EOL;
                         $this->saveAttachment($attachment['filename'], $attachment['data']);
                     }    
                 }
                 echo 'Finish Read terminal: ' . $terminal . PHP_EOL;
             }
+            echo 'FINISH '. date("Y-m-d H:i:s") . PHP_EOL;             
             return true;
         }
 
