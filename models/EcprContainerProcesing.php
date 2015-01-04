@@ -40,6 +40,14 @@ class EcprContainerProcesing extends BaseEcprContainerProcesing
         );
     }
 
+    public function attributeLabels()
+    {
+        return array_merge(
+            parent::attributeLabels(),
+            EcntContainer::model()->attributeLabels()
+        );
+    }    
+    
     public function rules()
     {
         return array_merge(
