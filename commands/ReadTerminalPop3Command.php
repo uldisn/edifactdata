@@ -38,7 +38,7 @@ EOD;
                 echo 'Found  ' . count($attacments) . ' attachments' . PHP_EOL;                
                 if ($attacments) {
                     foreach ($attacments as $attachment){
-                        echo 'file: ' . $attachment['filename'] . PHP_EOL;
+                        //echo 'file: ' . $attachment['filename'] . PHP_EOL;
                         $this->saveAttachment($attachment['filename'], $attachment['data']);
                     }    
                 }
