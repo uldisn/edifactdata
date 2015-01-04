@@ -37,7 +37,7 @@ EOD;
                 $attacments = $this->readPop3Attachments($pop3_settings['host'], $pop3_settings['user'], $pop3_settings['password']);
                 if ($attacments) {
                     foreach ($attacments as $attachment){
-                        echo 'file: ' . $attachment['filename'] . PHP_EOL;
+                        //echo 'file: ' . $attachment['filename'] . PHP_EOL;
                         $this->saveAttachment($attachment['filename'], $attachment['data']);
                     }    
                 }
@@ -114,7 +114,6 @@ EOD;
         /* for every email... */
         echo 'Reademails' ;
         foreach ($emails as $email_number) {
-            echo 'E';
 
             /* get information specific to this email */
             $overview = imap_fetch_overview($inbox, $email_number, 0);
@@ -205,18 +204,30 @@ EOD;
         $EdiReader = new EDI\Reader($f);
 
         //read & save data
+        $terminal = $EdiReader->readEdiDataValue('UNB', 2);
+        $message_ref_number = $EdiReader->readEdiDataValue('UNH', 1);        
         $prepare_date = $EdiReader->readEdiDataValue('UNB', 4, 0);
         $prepare_time = $EdiReader->readEdiDataValue('UNB', 4, 1);
         $prepare_datetime = preg_replace('#(\d\d)(\d\d)(\d\d)#', '20$1-$2-$3', $prepare_date)
                 . ' '
                 . preg_replace('#(\d\d)(\d\d)#', '$1:$2', $prepare_time);
+        
+        $criteria = new CDbCriteria;
+        $criteria
+            ->compare('message_ref_number',$message_ref_number)
+            ->compare('terminal',$terminal);
 
+        
+        if(Edifact::model()->find($criteria)){
+            return false;
+        }
+        
         echo ' Terminal:' . $EdiReader->readEdiDataValue('UNB', 2).PHP_EOL;
         echo ' Number:' . $EdiReader->readEdiDataValue('UNH', 1).PHP_EOL;
         
         $edifact = new Edifact();
-        $edifact->terminal = $EdiReader->readEdiDataValue('UNB', 2);
-        $edifact->message_ref_number = $EdiReader->readEdiDataValue('UNH', 1);
+        $edifact->terminal = $terminal;
+        $edifact->message_ref_number = $message_ref_number;
         $edifact->prep_datetime = $prepare_datetime;
         $edifact->filename = $file_name;
         $edifact->message = $data;
@@ -225,6 +236,7 @@ EOD;
             return false;
         }
         $this->readEdiData($edifact->id);
+        echo ' OK'.PHP_EOL;        
     }
 
     public function analyze($edi_id) {

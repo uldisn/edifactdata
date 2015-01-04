@@ -1,6 +1,6 @@
 <?php
 
-class m141109_192506_ecnt_create extends EDbMigration
+class m150102_105506_ccmc_create extends EDbMigration
 {
 	public function up()
 	{
