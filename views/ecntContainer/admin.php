@@ -64,7 +64,8 @@ $this->widget('TbGridView',
                                 'options' => array(
                                     'ranges' => array('today','yesterday','this_week','last_week','this_month','last_month','this_year'),
                                 ) 
-                            ), TRUE ),                
+                            ), TRUE ),  
+                 'headerHtmlOptions'=>array('style' => 'width:100px;'),
             ),
             array(
                 'name' => 'ecnt_operation',
@@ -75,6 +76,7 @@ $this->widget('TbGridView',
                 'type' => 'raw', 
                 'value' => 'Chtml::tag("span",array( "title" => $data->ccmcMoveCode->ccmc_long ),$data->getEnumColumnLabel("ecnt_move_code"))',
                 'filter' => $model->getEnumFieldLabels('ecnt_move_code'),
+                'headerHtmlOptions'=>array('style' => 'width:70px;'),
             ),            
             array(
                 //varchar(50)
@@ -103,6 +105,7 @@ $this->widget('TbGridView',
             array(
                     'name' => 'ecnt_statuss',
                    'filter' => $model->getEnumFieldLabels('ecnt_statuss'),
+                     'headerHtmlOptions'=>array('style' => 'width:100px;'),
                 ),
        //     array(
                 //varchar(50)
