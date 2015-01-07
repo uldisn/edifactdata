@@ -133,7 +133,7 @@ while ($row = array_shift($data)) {
     $rn ++;
     $objPHPExcel->setActiveSheetIndex(0)
             ->setCellValue('A' . $rn, substr($row->ecnt_container_nr, 0, 4))
-            ->setCellValue('B' . $rn, substr($row->ecnt_container_nr, 5))
+            ->setCellValue('B' . $rn, substr($row->ecnt_container_nr, 4))
             ->setCellValue('C' . $rn, 'LVRIX')
             ->setCellValue('D' . $rn, $terminal_alt_codes[$row->ecnt_terminal])
             ->setCellValue('E' . $rn, $row->ecnt_move_code)

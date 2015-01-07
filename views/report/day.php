@@ -91,7 +91,7 @@ if ($data) {
         ?>
                         <tr>
                             <td><?php echo substr($row->ecnt_container_nr, 0, 4) ?></td>
-                            <td><?php echo substr($row->ecnt_container_nr, 5) ?></td>
+                            <td><?php echo substr($row->ecnt_container_nr, 4) ?></td>
                             <td>LVRIX</td>
                             <td><?php echo $terminal_alt_codes[$row->ecnt_terminal] ?></td>                    
                             <td><?php echo $row->ecnt_move_code ?></td>                    
