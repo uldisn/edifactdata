@@ -216,12 +216,12 @@ class EcntContainer extends BaseEcntContainer
          * search prev moving and analyse move code sqn
          */
         $this->ecnt_error = null;
-        $this->ecnt_notes = '';
+    //    $this->ecnt_notes = '';
         if(!empty($this->ecnt_move_code) 
                 && $this->ecnt_move_code != EcntContainer::ECNT_MOVE_CODE_DF){
             $prev_ecnt = $this->searchPrevContainer();
             if(!$prev_ecnt){
-                EcerErrors::registreError($this->ecnt_id, 'Can not finfd previous moving');
+                EcerErrors::registreError($this->ecnt_id, 'Can not find previous moving');
             }else{
                 $sqn_rules = [
                     'DF' => 'LD',
