@@ -496,42 +496,35 @@ EOD;
                 $ecnt_data = [];
                 $ecnt_data['ecnt_terminal'] = $terminal;
                 $ecnt_data['ecnt_message_type'] = $MessageType;   
+                $ecnt_data['ecnt_fwd'] = $EdiReader->readEdiDataValue(['NAD', ['1' => 'CA']], 2,0);   
+                $ecnt_data['ecnt_transport_id'] = $EdiReader->readEdiDataValue(['TDT', ['1' => 20]], 2);   
+                $ecnt_data['ecnt_edifact_id'] = $edifact->id;    
                 
+                $ecnt_data['ecnt_container_nr'] = $EdiReader->readEdiDataValue('EQD', 2);        
+                $ecnt_data['ecnt_iso_type'] = $EdiReader->readEdiDataValue('EQD', 3,0);
+
+                $ecnt_data['ecnt_datetime'] = $EdiReader->readEdiSegmentDTM(203); 
                 //2005 Date/time/period qualifier: code
                 //‘203' Execution date
                 $ecnt_data['ecnt_datetime'] = $EdiReader->readEdiSegmentDTM(203);     
                 
-                //TDT        8067 Mode of transport, coded: codes
-                //                '1' maritime transport
-                //                '8' inland water transport
-                $ModeOfTransport = $EdiReader->readEdiDataValue(['TDT',[1=>20]],3,1);
-                $LoadingLocationIdentification = $EdiReader->readEdiDataValue(['LOC',[1=>9]],2,0);
-                $DischargingLocationIdentification = $EdiReader->readEdiDataValue(['LOC',[1=>11]],2,0);
-                if($LoadingLocationIdentification == 'LVRIX'){
+                
+                if($MessageCode == 270 ){
                     $ecnt_data['ecnt_operation'] = EcntContainer::ECNT_OPERATION_VESSEL_LOAD;   
                     $ecnt_data['ecnt_ib_carrier'] = 'TRUCK';
-                }elseif($DischargingLocationIdentification == 'LVRIX'){
+
+                }elseif($MessageCode == 98){
                     $ecnt_data['ecnt_operation'] = EcntContainer::ECNT_OPERATION_VESSEL_DISCHARGE; 
                     $ecnt_data['ecnt_ob_carrier'] = 'TRUCK';                    
                 }else{
                     $error[] = 'Neatrada operation - vessel load/unload!'  
                         .'/Loading:'.$LoadingLocationIdentification
                         .'/Discharging:'.$DischargingLocationIdentification 
+                        .'/MessageCode:'.$MessageCode 
                             ;
-                }     
-                
-                 //PARTY QUALIFIER 
-                //CA Carrier
-                //(3126) Party undertaking or arranging transport of goods between named points.
-                $ecnt_data['ecnt_fwd'] = $EdiReader->readEdiDataValue(['NAD', ['1' => 'CA']], 2,0);
-                
-                //8051 TRANSPORT STAGE QUALIFIER: 
-                //  '20' (main carriage)                
-                // Read: 8028 CONVEYANCE REFERENCE NUMBER: the vessel operator's loading voyage number
-                $ecnt_data['ecnt_transport_id'] = $EdiReader->readEdiDataValue(['TDT', ['1' => 20]], 2);           
+                }            
                 
                 $ecnt_data['ecnt_weight'] = $EdiReader->readEdiDataValue(['MEA', ['2' => 'G']], 3, 1);        
-                $ecnt_data['ecnt_booking'] = $EdiReader->readEdiDataValue(['RFF', ['1.0' => 'BN']], 1,1); 
                 $ecnt_data['ecnt_statuss'] = $EdiReader->readFullEmpty(); 
                 EcntContainer::saveEdiData($ecnt_data,$EdiReader,$error,$edifact);  
                 return true;
