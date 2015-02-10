@@ -46,24 +46,105 @@ $cancel_buton = $this->widget("bootstrap.widgets.TbButton", array(
                 ),
                 array(
                     'name' => 'ecnt_move_code',
+                    'type' => 'raw',
+                    'value' => $this->widget(
+                        'EditableField',
+                        array(
+                            'model' => $model,
+                            'type' => 'select',
+                            'url' => $this->createUrl('/edifactdata/ecntContainer/editableSaver'),
+                            'source' => $model->getEnumFieldLabels('ecnt_move_code'),
+                            'attribute' => 'ecnt_move_code',
+                            //'placement' => 'right',
+                        ),
+                        true
+                    )
                 ),
                 array(
                     'name' => 'ecnt_container_nr',
+                    'type' => 'raw',
+                    'value' => $this->widget(
+                        'EditableField',
+                        array(
+                            'model' => $model,
+                            'attribute' => 'ecnt_container_nr',
+                            'url' => $this->createUrl('/edifactdata/ecntContainer/editableSaver'),
+                        ),
+                        true
+                    )
                 ),
                 array(
                     'name' => 'ecnt_datetime',
+                    'type' => 'raw',
+                    'value' => $this->widget(
+                        'EditableField',
+                        array(
+                            'model' => $model,
+                            'type' => 'datetime',
+                            'url' => $this->createUrl('/edifactdata/ecntContainer/editableSaver'),
+                            'attribute' => 'ecnt_datetime',
+                            //'placement' => 'right',
+                        ),
+                        true
+                    )
                 ),
                 array(
                     'name' => 'ecnt_operation',
+                    'type' => 'raw',
+                    'value' => $this->widget(
+                        'EditableField',
+                        array(
+                            'model' => $model,
+                            'type' => 'select',
+                            'url' => $this->createUrl('/edifactdata/ecntContainer/editableSaver'),
+                            'source' => $model->getEnumFieldLabels('ecnt_operation'),
+                            'attribute' => 'ecnt_operation',
+                            //'placement' => 'right',
+                        ),
+                        true
+                    )
                 ),
                 array(
                     'name' => 'ecnt_transport_id',
+                    'type' => 'raw',
+                    'value' => $this->widget(
+                        'EditableField',
+                        array(
+                            'model' => $model,
+                            'attribute' => 'ecnt_transport_id',
+                            'url' => $this->createUrl('/edifactdata/ecntContainer/editableSaver'),
+                        ),
+                        true
+                    )
                 ),
                 array(
                     'name' => 'ecnt_length',
+                    'type' => 'raw',
+                    'value' => $this->widget(
+                        'EditableField',
+                        array(
+                            'model' => $model,
+                            'type' => 'select',
+                            'url' => $this->createUrl('/edifactdata/ecntContainer/editableSaver'),
+                            'source' => $model->getEnumFieldLabels('ecnt_length'),
+                            'attribute' => 'ecnt_length',
+                            //'placement' => 'right',
+                        ),
+                        true
+                    )
                 ),
                 array(
                     'name' => 'ecnt_iso_type',
+                    'type' => 'raw',
+                    'value' => $this->widget(
+                        'EditableField',
+                        array(
+                            'model' => $model,
+                            'attribute' => 'ecnt_iso_type',
+                            'url' => $this->createUrl('/edifactdata/ecntContainer/editableSaver'),
+                        ),
+                        true
+                    )
                 ),
                 array(
                     'name' => 'ecnt_ib_carrier',
@@ -73,9 +154,32 @@ $cancel_buton = $this->widget("bootstrap.widgets.TbButton", array(
                 ),
                 array(
                     'name' => 'ecnt_weight',
+                    'type' => 'raw',
+                    'value' => $this->widget(
+                        'EditableField',
+                        array(
+                            'model' => $model,
+                            'attribute' => 'ecnt_weight',
+                            'url' => $this->createUrl('/edifactdata/ecntContainer/editableSaver'),
+                        ),
+                        true
+                    )
                 ),
                 array(
                     'name' => 'ecnt_statuss',
+                    'type' => 'raw',
+                    'value' => $this->widget(
+                        'EditableField',
+                        array(
+                            'model' => $model,
+                            'type' => 'select',
+                            'url' => $this->createUrl('/edifactdata/ecntContainer/editableSaver'),
+                            'source' => $model->getEnumFieldLabels('ecnt_statuss'),
+                            'attribute' => 'ecnt_statuss',
+                            //'placement' => 'right',
+                        ),
+                        true
+                    )
                 ),
                 array(
                     'name' => 'ecnt_line',
