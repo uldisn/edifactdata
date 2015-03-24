@@ -329,7 +329,7 @@ EOD;
         $MessageType = $EdiReader->readUNHmessageType();
         $MessageCode = $EdiReader->readEdiDataValue('BGM', 1);
         
-        if($terminal == 'RIXBCT'){
+        if($terminal == 'RIXBCT' || $terminal == 'LVRIXKRA'){
             
    
             if($MessageType == 'COARRI'){
@@ -440,9 +440,12 @@ EOD;
                  // TRUCK OUT                       
                  $LocationFunctionPlaceLoading =  $EdiReader->readEdiDataValue(['LOC',[1=>9]],2);
                  $LocationFunctionPlaceDischarge =  $EdiReader->readEdiDataValue(['LOC',[1=>11]],2);
+                 $LocationFunctionKS =  $EdiReader->readEdiDataValue(['LOC',[1=>165]],2);
                  if(!empty($LocationFunctionPlaceLoading)){
                      $ecnt_operation = EcntContainer::ECNT_OPERATION_TRUCK_IN;   
                  }elseif(!empty($LocationFunctionPlaceDischarge)){
+                     $ecnt_operation = EcntContainer::ECNT_OPERATION_TRUCK_OUT;   
+                 }elseif(!empty($LocationFunctionKS)){
                      $ecnt_operation = EcntContainer::ECNT_OPERATION_TRUCK_OUT;   
                  }else{
                      $error[] = 'Neatrada operation - truck in/out';
@@ -551,38 +554,9 @@ EOD;
                 }            
 
                 $ecnt_data['ecnt_statuss'] = $EdiReader->readFullEmpty();
+
                 //Effective from date/time
-                //(2069) Date and/or time at which specified event or document becomes effective.
                 $ecnt_data['ecnt_datetime'] = $EdiReader->readEdiSegmentDTM('181');
-
-                //20 - Main-carriage transport
-                //The primary stage in the movement of cargo from the point of origin to the intended destination.
-
-
-                //LOC Place of loading
-                // 9 - [3334] Seaport, airport, freight terminal, 
-                //              rail station or other place at which the goods (cargo) 
-                //              are loaded on to the means of transport being used for their carriage.
-                //    TRUCK IN          
-                //11 - Place of discharge
-                //      [3392] Seaport, airport, freight terminal, rail station or other 
-                //      place at which goods are unloaded from the means of transport 
-                //      having been used for their carriage.
-                // TRUCK OUT            
-    //            $LocationFunctionPlaceLoading =  $EdiReader->readEdiDataValue(['LOC',[1=>9]],2);
-    //            $LocationFunctionPlaceDischarge =  $EdiReader->readEdiDataValue(['LOC',[1=>11]],2);
-    //            if(!empty($LocationFunctionPlaceLoading)){
-    //                $ecnt_data['ecnt_operation = EcntContainer::ECNT_OPERATION_TRUCK_IN;   
-    //            }elseif(!empty($LocationFunctionPlaceDischarge)){
-    //                $ecnt_data['ecnt_operation = EcntContainer::ECNT_OPERATION_TRUCK_OUT;   
-    //            }else{
-    //                $error[] = 'Neatrada operation - truck in/out';
-    //            }
-
-
-                //id: 1131 - codeListQualifier     Identification of a code list.
-                // TER - TERMINAL
-                //$LocationFunctionPlaceLoading =  $EdiReader->readEdiDataValue(['LOC',[1=>165]],3,1);
 
                 $ecnt_data['ecnt_transport_id'] = $EdiReader->readEdiDataValue(['TDT', ['1' => '1']], 8, 0);
                 if(!empty($ecnt_data['ecnt_transport_id'])){
