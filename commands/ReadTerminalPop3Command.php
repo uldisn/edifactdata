@@ -262,7 +262,7 @@ EOD;
 
         $analyser = new EDI\Analyser();
 
-        $codes_file = realpath(Yii::getPathOfAlias('edifact-parser')) . '/Mapping/d95b/codes.xml';
+        $codes_file = realpath(Yii::getPathOfAlias('edifact-parser')) . '/Mapping/D95B/codes.xml';
         $codes = $analyser->readCodes($codes_file);
         $codes = $codes['data_element'];
         while($da = array_shift($codes)){

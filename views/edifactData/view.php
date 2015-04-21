@@ -159,7 +159,7 @@ $this->widget(
 
         $analyser = new EDI\Analyser();
         $analyser->edi_message = $edifact->message;
-        $mapping_segments = realpath(Yii::getPathOfAlias('edifact-parser')) . '/Mapping/d95b/segments.xml';
+        $mapping_segments = realpath(Yii::getPathOfAlias('edifact-parser')) . '/Mapping/D95B/segments.xml';
         $analyser->loadSegmentsXml($mapping_segments);
         echo $analyser->process($parsed);        
         
