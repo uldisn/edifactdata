@@ -17,8 +17,22 @@ class DashboardController extends Controller {
         return array(
             array(
                 'allow',
+                'actions'=>array('default'),
+                'roles' => array('Administrator'),
+            ),
+            array('deny',
+                'actions'=>array('default'),
+                'roles' => array('Orders'),
+                'deniedCallback' => function() { Yii::app()->controller->redirect(array ('/ldm/pfOrder')); }
+            ),
+            array(
+                'allow',
                 'actions' => array('default'),
-                'roles' => array('Dashboard.*'),
+                'users' => array('@'),
+            ),
+            array(
+                'deny',
+                'users' => array('*'),
             ),
         );
     }
