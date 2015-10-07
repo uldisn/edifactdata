@@ -96,7 +96,7 @@ $styleDayTotal = array(
 
 $objPHPExcel = new PHPExcel();
 
-$objPHPExcel->getProperties()->setCreator("KL Shiping")
+$objPHPExcel->getProperties()->setCreator("KL Shipping")
 //->setLastModifiedBy("Maarten Balliauw")
         ->setTitle('Container movings on ' . $report_date);
 

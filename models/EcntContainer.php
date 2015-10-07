@@ -25,6 +25,20 @@ class EcntContainer extends BaseEcntContainer
     {
         return parent::getItemLabel();
     }
+    
+    public function getTerminalClass(){
+        switch ($this->ecnt_terminal) {
+            case 'RIXCT':
+                return 'label label-warning';
+            case 'RIXBCT':
+                return 'label label-important';
+                break;
+
+            default:
+                return 'label label-inverse';
+                break;
+        }
+    }
 
     public function behaviors()
     {

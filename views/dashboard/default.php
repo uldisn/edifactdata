@@ -142,7 +142,11 @@ $this->widget('TbGridView', array(
             ),
             'filter' => $model->getEnumFieldLabels('ecer_status'),
         ),
-        array('name' => 'ecnt_terminal'),
+        array(
+            'name' => 'ecnt_terminal',
+            'type' => 'raw',
+            'value' => 'Chtml::tag("span" , array("class" => $data->getTerminalClass() ), $data->ecnt_terminal)'            
+            ),
         array('name' => 'ecnt_move_code'),
         array('name' => 'ecnt_container_nr'),
         array('name' => 'ecnt_datetime'),
@@ -222,7 +226,11 @@ $this->widget('TbGridView', array(
             ),
             'filter' => $model->getEnumFieldLabels('ecer_status'),
         ),
-        array('name' => 'ecnt_terminal'),
+        array(
+            'name' => 'ecnt_terminal',
+            'type' => 'raw',
+            'value' => 'Chtml::tag("span" , array("class" => $data->getTerminalClass() ), $data->ecnt_terminal)'            
+            ),
         array('name' => 'ecnt_move_code'),
         array('name' => 'ecnt_container_nr'),
         array('name' => 'ecnt_datetime'),
@@ -283,6 +291,8 @@ $this->widget('TbGridView', array(
             array(
                 //varchar(10)
                 'name' => 'ecnt_terminal',
+                'type' => 'raw',
+                'value' => 'Chtml::tag("span" , array("class" => $data->getTerminalClass() ), $data->ecnt_terminal)'
             ),
             array(
                 //varchar(50)
@@ -363,6 +373,8 @@ $this->widget('TbGridView', array(
             array(
                 //varchar(10)
                 'name' => 'ecnt_terminal',
+                'type' => 'raw',
+                'value' => 'Chtml::tag("span" , array("class" => $data->getTerminalClass() ), $data->ecnt_terminal)'
             ),
             array(
                 //varchar(50)

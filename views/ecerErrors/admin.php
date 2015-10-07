@@ -24,7 +24,12 @@ $this->widget('TbGridView',
             'displayFirstAndLast' => true,
         ),
         'columns' => array(
-                array('name'=>'ecnt_terminal'),
+                array(
+                    //varchar(10)
+                    'name' => 'ecnt_terminal',
+                    'type' => 'raw',
+                    'value' => 'Chtml::tag("span" , array("class" => $data->getTerminalClass() ), $data->ecnt_terminal)'
+                ),
                 array('name'=>'ecnt_move_code'),
                 array('name'=>'ecnt_container_nr'),
                 array('name'=>'ecnt_datetime'),

@@ -47,6 +47,8 @@ $this->widget('TbGridView',
             array(
                 //varchar(10)
                 'name' => 'ecnt_terminal',
+                'type' => 'raw',
+                'value' => 'Chtml::tag("span" , array("class" => $data->getTerminalClass() ), $data->ecnt_terminal)'
             ),
             array(
                 //varchar(50)
