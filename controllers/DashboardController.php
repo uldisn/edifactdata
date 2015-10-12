@@ -22,7 +22,7 @@ class DashboardController extends Controller {
             ),
             array('deny',
                 'actions'=>array('default'),
-                'roles' => array('Orders'),
+                'roles' => array('Orders','OrdersAdmin'),
                 'deniedCallback' => function() { Yii::app()->controller->redirect(array ('/ldm/pfOrder')); }
             ),
             array(
