@@ -210,13 +210,13 @@ EOD;
                 . ' '
                 . preg_replace('#(\d\d)(\d\d)#', '$1:$2', $prepare_time);
                 
-        if(empty(trim($terminal))){
+        if(empty($terminal)){
             echo 'Error: Terminal empty'.PHP_EOL;
             echo $data;
             continue;
         }
          
-        if(empty(trim($message_ref_number))){
+        if(empty($message_ref_number)){
             echo 'Error: Numberl empty'.PHP_EOL;
             echo $data;
             continue;
