@@ -209,6 +209,9 @@ EOD;
         $prepare_datetime = preg_replace('#(\d\d)(\d\d)(\d\d)#', '20$1-$2-$3', $prepare_date)
                 . ' '
                 . preg_replace('#(\d\d)(\d\d)#', '$1:$2', $prepare_time);
+                
+        echo ' Terminal:' . $EdiReader->readEdiDataValue('UNB', 2).PHP_EOL;
+        echo ' Number:' . $EdiReader->readEdiDataValue('UNH', 1).PHP_EOL;        
         
         $criteria = new CDbCriteria;
         $criteria
@@ -220,9 +223,8 @@ EOD;
             return false;
         }
         
-        echo ' Terminal:' . $EdiReader->readEdiDataValue('UNB', 2).PHP_EOL;
-        echo ' Number:' . $EdiReader->readEdiDataValue('UNH', 1).PHP_EOL;
-        
+        echo ' Save' . PHP_EOL;
+
         $edifact = new Edifact();
         $edifact->terminal = $terminal;
         $edifact->message_ref_number = $message_ref_number;
