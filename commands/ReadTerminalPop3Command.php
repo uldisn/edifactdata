@@ -210,7 +210,18 @@ EOD;
                 . ' '
                 . preg_replace('#(\d\d)(\d\d)#', '$1:$2', $prepare_time);
                 
-        echo ' Terminal:' . $EdiReader->readEdiDataValue('UNB', 2).PHP_EOL;
+        if(empty(trim($terminal)){
+            echo 'Error: Terminal empty'.PHP_EOL;
+            echo $data;
+            continue;
+        }
+         
+        if(empty(trim($message_ref_number)){
+            echo 'Error: Numberl empty'.PHP_EOL;
+            echo $data;
+            continue;
+        }                
+        echo ' Terminal:' . $terminal.PHP_EOL;
         echo ' Number:' . $EdiReader->readEdiDataValue('UNH', 1).PHP_EOL;        
         
         $criteria = new CDbCriteria;
