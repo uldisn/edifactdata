@@ -213,13 +213,13 @@ EOD;
         if(empty($terminal)){
             echo 'Error: Terminal empty'.PHP_EOL;
             echo $data;
-            continue;
+            return false;
         }
          
         if(empty($message_ref_number)){
             echo 'Error: Numberl empty'.PHP_EOL;
             echo $data;
-            continue;
+            return false;
         }                
         echo ' Terminal:' . $terminal.PHP_EOL;
         echo ' Number:' . $EdiReader->readEdiDataValue('UNH', 1).PHP_EOL;        
