@@ -13,6 +13,6 @@
      "require": {
         "php": ">=5.3.0",
         "PHPOffice/PHPExcel": "1.8.1",
-        "dbrkls/edifact": "FORMERGE"
+        "dbrkls/edifact": "dev-FORMERGE"
      }
 }
