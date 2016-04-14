@@ -37,8 +37,22 @@ EOD;
                 $attacments = $this->readPop3Attachments($pop3_settings['host'], $pop3_settings['user'], $pop3_settings['password']);
                 echo 'Found  ' . count($attacments) . ' attachments' . PHP_EOL;                
                 if ($attacments) {
+                    $att = [];
                     foreach ($attacments as $attachment){
-                        //echo 'file: ' . $attachment['filename'] . PHP_EOL;
+
+                        $EdiReader = new EDI\Reader($data);
+                        $messageCount = $EdiReader->readEdiDataValue('UNZ', 1);
+                        if($messageCount != 1){
+                            $aM = Reader::splitMultiMessage($data);
+                            foreach($aM as $a){
+                                $att[] = $a;
+                            }
+                            continue;
+                        }
+                        $att[] = $attachment;
+                    }    
+                    foreach ($att as $attachment){
+                        
                         $this->saveAttachment($attachment['filename'], $attachment['data']);
                     }    
                 }
@@ -198,8 +212,8 @@ EOD;
 
     public function saveAttachment($file_name, $data) {
 
-        $f = explode(PHP_EOL, $data);
-        $EdiReader = new EDI\Reader($f);
+        //$f = explode(PHP_EOL, $data);
+        $EdiReader = new EDI\Reader($data);
 
         //read & save data
         $terminal = $EdiReader->readEdiDataValue('UNB', 2);
@@ -260,7 +274,7 @@ EOD;
 
         $analyser = new EDI\Analyser();
         $analyser->edi_message = $f;
-        $mapping_segments = realpath(Yii::getPathOfAlias('edifact-parser')) . '/Mapping/D95B/segments.xml';
+        $mapping_segments = realpath(Yii::getPathOfAlias('edifact-data')) . '/D95B/segments.xml';
         $analyser->loadSegmentsXml($mapping_segments);
         $text = $analyser->process($parsed);
 
@@ -275,7 +289,7 @@ EOD;
 
         $analyser = new EDI\Analyser();
 
-        $codes_file = realpath(Yii::getPathOfAlias('edifact-parser')) . '/Mapping/D95B/codes.xml';
+        $codes_file = realpath(Yii::getPathOfAlias('edifact-data')) . '/D95B/codes.xml';
         $codes = $analyser->readCodes($codes_file);
         $codes = $codes['data_element'];
         while($da = array_shift($codes)){
