@@ -40,17 +40,22 @@ EOD;
                     $att = [];
                     foreach ($attacments as $attachment){
 
-                        $EdiReader = new EDI\Reader($data);
+                        $EdiReader = new EDI\Reader($attachment['data']);
+
                         $messageCount = $EdiReader->readEdiDataValue('UNZ', 1);
                         if($messageCount != 1){
-                            $aM = Reader::splitMultiMessage($data);
+                            $aM = EDI\Reader::splitMultiMessage($attachment['data']);
                             foreach($aM as $a){
-                                $att[] = $a;
+                                $att[] = [
+                                    'filename' => $attachment['filename'],
+                                    'data' => $a,
+                                    ];
                             }
                             continue;
                         }
                         $att[] = $attachment;
                     }    
+                    echo 'Found  ' . count($att) . ' messages' . PHP_EOL;                                    
                     foreach ($att as $attachment){
                         
                         $this->saveAttachment($attachment['filename'], $attachment['data']);
